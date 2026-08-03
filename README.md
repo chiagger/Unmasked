@@ -2,9 +2,9 @@
 
 > **A low-pressure, sensory-friendly friendship platform designed by and for the neurodivergent community.**
 
-[![Expo](https://img.shields.io/badge/Expo-51.0-black?logo=expo)](https://expo.dev/)
-[![React Native](https://img.shields.io/badge/React%20Native-0.74-61DAFB?logo=react)](https://reactnative.dev/)
-[![Firebase](https://img.shields.io/badge/Firebase-10.0-FFCA28?logo=firebase)](https://firebase.google.com/)
+[![Expo](https://img.shields.io/badge/Expo-57-black?logo=expo)](https://expo.dev/)
+[![React Native](https://img.shields.io/badge/React%20Native-0.86-61DAFB?logo=react)](https://reactnative.dev/)
+[![Firebase](https://img.shields.io/badge/Firebase-12+-FFCA28?logo=firebase)](https://firebase.google.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
@@ -43,10 +43,10 @@ Unmasked is built from the ground up to prevent visual and sensory fatigue:
 
 Built for cross-platform efficiency as a solo-developer project:
 
-- **Frontend:** [React Native](https://reactnative.dev/) with [Expo](https://expo.dev/) (SDK 51+)
+- **Frontend:** [React Native](https://reactnative.dev/) 0.86 with [Expo](https://expo.dev/) SDK 57 and Expo Router
 - **Backend & Auth:** [Firebase Authentication](https://firebase.google.com/docs/auth) & [Cloud Firestore](https://firebase.google.com/docs/firestore)
-- **Maps & Geolocation:** `react-native-maps` + Geohashing (`geofirestore`) for privacy-first local discovery
-- **UI Components:** Customized design system built on `react-native-reanimated` (low motion) & `react-native-gifted-chat`
+- **Architecture:** Feature-first TypeScript modules with a token-based accessible design system
+- **Maps & Geolocation:** Planned `react-native-maps` integration with privacy-preserving geohashes
 
 ---
 
@@ -54,5 +54,15 @@ Built for cross-platform efficiency as a solo-developer project:
 
 ### Prerequisites
 
-- Node.js (v18 or higher)
+- Node.js 22.13 or higher
 - Expo Go app on your iOS/Android device OR Xcode / Android Studio simulators
+
+### Local setup
+
+```bash
+npm install
+cp .env.example .env
+npm start
+```
+
+Add the Firebase web app credentials to `.env`. Until then, the app runs with local demo data and displays the backend as unconfigured in the profile screen.
