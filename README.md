@@ -3,7 +3,7 @@
 > **A low-pressure, sensory-friendly friendship platform designed by and for the neurodivergent community.**
 
 [![Expo](https://img.shields.io/badge/Expo-57-black?logo=expo)](https://expo.dev/)
-[![React Native](https://img.shields.io/badge/React%20Native-0.86-61DAFB?logo=react)](https://reactnative.dev/)
+[![React Native](https://img.shields.io/badge/React%20Native-0.86.0-61DAFB?logo=react)](https://reactnative.dev/)
 [![Firebase](https://img.shields.io/badge/Firebase-12+-FFCA28?logo=firebase)](https://firebase.google.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -43,7 +43,7 @@ Unmasked is built from the ground up to prevent visual and sensory fatigue:
 
 Built for cross-platform efficiency as a solo-developer project:
 
-- **Frontend:** [React Native](https://reactnative.dev/) 0.86 with [Expo](https://expo.dev/) SDK 57 and Expo Router
+- **Frontend:** [React Native](https://reactnative.dev/) 0.86.0 with [Expo](https://expo.dev/) SDK 57 and Expo Router
 - **Backend & Auth:** [Firebase Authentication](https://firebase.google.com/docs/auth) & [Cloud Firestore](https://firebase.google.com/docs/firestore)
 - **Architecture:** Feature-first TypeScript modules with a token-based accessible design system
 - **Maps & Geolocation:** Planned `react-native-maps` integration with privacy-preserving geohashes
@@ -65,4 +65,11 @@ cp .env.example .env
 npm start
 ```
 
-Add the Firebase web app credentials to `.env`. Until then, the app runs with local demo data and displays the backend as unconfigured in the profile screen.
+Native Firebase uses the platform service files. Add the Google Web OAuth
+client ID to `.env` to enable Google Sign-In on Android.
+
+Native Firebase Authentication setup is documented in
+[`docs/authentication.md`](./docs/authentication.md).
+
+On macOS, `npm run android` automatically uses the Java runtime bundled with
+Android Studio when `JAVA_HOME` is not already configured.

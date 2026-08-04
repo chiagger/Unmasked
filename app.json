@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Unmasked: Neurodivergent Friends",
+    "name": "Unmasked",
     "slug": "unmasked",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,11 +10,10 @@
     "backgroundColor": "#F7F2EC",
     "ios": {
       "icon": "./assets/expo.icon",
-      "bundleIdentifier": "com.chiagger.unmasked",
-      "supportsTablet": true,
-      "infoPlist": {
-        "CFBundleDisplayName": "Unmasked"
-      }
+      "bundleIdentifier": "com.unmasked.unmasked",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "usesAppleSignIn": true,
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
@@ -24,7 +23,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.chiagger.unmasked"
+      "package": "com.unmasked.unmasked",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "output": "static",
@@ -32,6 +32,10 @@
     },
     "plugins": [
       "expo-router",
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      "expo-apple-authentication",
+      "@react-native-google-signin/google-signin",
       [
         "expo-splash-screen",
         {

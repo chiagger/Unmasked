@@ -1,14 +1,10 @@
-import { getApp, getApps, initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getApp, setReactNativeAsyncStorage } from '@react-native-firebase/app';
+import { getAuth } from '@react-native-firebase/auth';
+import { getFirestore } from '@react-native-firebase/firestore';
 
-import { env, isFirebaseConfigured } from '@/config/env';
+setReactNativeAsyncStorage(AsyncStorage);
 
-export const firebaseApp = isFirebaseConfigured
-  ? getApps().length > 0
-    ? getApp()
-    : initializeApp(env.firebase)
-  : null;
-
-export const auth = firebaseApp ? getAuth(firebaseApp) : null;
-export const db = firebaseApp ? getFirestore(firebaseApp) : null;
+export const firebaseApp = getApp();
+export const auth = getAuth(firebaseApp);
+export const db = getFirestore(firebaseApp, 'default');

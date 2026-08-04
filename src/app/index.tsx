@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import {
@@ -11,8 +12,24 @@ import {
   radii,
   spacing,
 } from '@/design-system';
+import { useAuth } from '@/providers/AuthProvider';
 
 export default function WelcomeScreen() {
+  const { logout, user } = useAuth();
+  const [pendingDestination, setPendingDestination] = useState<'login' | 'register' | null>(
+    null,
+  );
+
+  const openAuthForm = async (destination: 'login' | 'register') => {
+    setPendingDestination(destination);
+    try {
+      if (user) await logout();
+      router.replace(destination === 'register' ? '/register' : '/login');
+    } finally {
+      setPendingDestination(null);
+    }
+  };
+
   return (
     <Screen contentStyle={styles.content}>
       <View style={styles.brandMark} accessibilityElementsHidden>
@@ -37,12 +54,16 @@ export default function WelcomeScreen() {
         <AppButton
           fullWidth
           label="Find your people"
-          onPress={() => router.replace('/(tabs)/discover')}
+          disabled={pendingDestination !== null}
+          loading={pendingDestination === 'register'}
+          onPress={() => openAuthForm('register')}
         />
         <AppButton
           fullWidth
           label="I already have an account"
-          onPress={() => router.replace('/(tabs)/discover')}
+          disabled={pendingDestination !== null}
+          loading={pendingDestination === 'login'}
+          onPress={() => openAuthForm('login')}
           variant="quiet"
         />
       </View>

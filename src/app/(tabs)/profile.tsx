@@ -1,11 +1,12 @@
 import { StyleSheet, Switch, View } from 'react-native';
 
-import { AppText, Card, Pill, Screen, colors, spacing } from '@/design-system';
-import { isFirebaseConfigured } from '@/config/env';
+import { AppButton, AppText, Card, Pill, Screen, colors, spacing } from '@/design-system';
 import { useAccessibilityPreferences } from '@/providers/AccessibilityProvider';
+import { useAuth } from '@/providers/AuthProvider';
 
 export default function ProfileScreen() {
   const { reduceMotion, setReduceMotion } = useAccessibilityPreferences();
+  const { logout, user } = useAuth();
 
   return (
     <Screen>
@@ -18,12 +19,11 @@ export default function ProfileScreen() {
 
       <Card style={styles.profileCard}>
         <View style={styles.profileHeading}>
-          <AppText variant="heading">Demo profile</AppText>
+          <AppText variant="heading">{user?.displayName || 'Your profile'}</AppText>
           <Pill label="Setup 40% complete" tone="sage" />
         </View>
         <AppText color={colors.textMuted}>
-          Add interests, communication preferences, boundaries, and your current social
-          energy.
+          {user?.email ?? 'Add interests, communication preferences, and boundaries.'}
         </AppText>
       </Card>
 
@@ -47,21 +47,8 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.section}>
-        <AppText variant="heading">Backend status</AppText>
-        <Card style={styles.settingRow}>
-          <View style={styles.settingCopy}>
-            <AppText variant="bodyStrong">Firebase</AppText>
-            <AppText color={colors.textMuted} variant="caption">
-              {isFirebaseConfigured
-                ? 'Configured and ready to connect.'
-                : 'Add the EXPO_PUBLIC_FIREBASE_* values to your .env file.'}
-            </AppText>
-          </View>
-          <Pill
-            label={isFirebaseConfigured ? 'Ready' : 'Needs config'}
-            tone={isFirebaseConfigured ? 'sage' : 'rose'}
-          />
-        </Card>
+        <AppText variant="heading">Account</AppText>
+        <AppButton fullWidth label="Sign out" onPress={logout} variant="secondary" />
       </View>
     </Screen>
   );
