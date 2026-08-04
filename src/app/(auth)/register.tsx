@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
@@ -20,15 +21,37 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{
+    displayName?: string;
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+  }>({});
   const [loading, setLoading] = useState<'email' | 'social' | null>(null);
+  const normalizedEmail = email.trim();
+  const emailIsValid = emailPattern.test(normalizedEmail);
+  const canSubmit =
+    displayName.trim().length > 0 &&
+    emailIsValid &&
+    password.length >= 8 &&
+    password === confirmPassword;
 
   const register = async () => {
-    const normalizedEmail = email.trim();
-    if (!displayName.trim()) return setError('Tell us what you would like to be called.');
-    if (!emailPattern.test(normalizedEmail)) return setError('Enter a valid email address.');
-    if (password.length < 8) return setError('Use at least 8 characters for your password.');
-    if (password !== confirmPassword) return setError('The passwords do not match.');
+    if (!canSubmit) {
+      setFieldErrors({
+        displayName: displayName.trim() ? undefined : 'Tell us what you would like to be called.',
+        email: emailIsValid ? undefined : 'Enter a valid email address.',
+        password:
+          password.length >= 8 ? undefined : 'Use at least 8 characters for your password.',
+        confirmPassword:
+          password === confirmPassword && confirmPassword
+            ? undefined
+            : 'Make sure both passwords match.',
+      });
+      return;
+    }
 
+    setFieldErrors({});
     setError(null);
     setLoading('email');
     try {
@@ -55,14 +78,39 @@ export default function RegisterScreen() {
   };
 
   return (
-    <AuthScreen title="Create your space" subtitle="A quiet profile you can shape over time.">
+    <AuthScreen
+      footer={
+        <Pressable
+          accessibilityRole="link"
+          onPress={() => router.replace('/login')}
+          style={styles.footerAction}>
+          <AppText color={colors.textMuted} style={styles.footerLabel}>
+            Already have an account?
+          </AppText>
+          <AppText color={colors.primary} variant="bodyStrong">Sign in</AppText>
+        </Pressable>
+      }
+      eyebrow="New here"
+      title="Create your space"
+      subtitle="A quiet profile you can shape over time.">
       <View style={styles.form}>
         <AuthField
+          autoCapitalize="words"
           autoComplete="name"
+          error={fieldErrors.displayName}
           label="What should we call you?"
           onChangeText={(value) => {
             setDisplayName(value);
             setError(null);
+            setFieldErrors((current) => ({ ...current, displayName: undefined }));
+          }}
+          onBlur={() => {
+            if (!displayName.trim()) {
+              setFieldErrors((current) => ({
+                ...current,
+                displayName: 'Tell us what you would like to be called.',
+              }));
+            }
           }}
           onSubmitEditing={() => emailRef.current?.focus()}
           placeholder="Your name or nickname"
@@ -72,25 +120,50 @@ export default function RegisterScreen() {
         <AuthField
           autoCapitalize="none"
           autoComplete="email"
+          error={fieldErrors.email}
           keyboardType="email-address"
           label="Email"
           onChangeText={(value) => {
             setEmail(value);
             setError(null);
+            setFieldErrors((current) => ({ ...current, email: undefined }));
+          }}
+          onBlur={() => {
+            if (!emailIsValid) {
+              setFieldErrors((current) => ({
+                ...current,
+                email: 'Enter a valid email address.',
+              }));
+            }
           }}
           onSubmitEditing={() => passwordRef.current?.focus()}
           placeholder="you@example.com"
           ref={emailRef}
           returnKeyType="next"
+          valid={emailIsValid}
           value={email}
         />
         <AuthField
           autoCapitalize="none"
           autoComplete="new-password"
+          error={fieldErrors.password}
           label="Password"
           onChangeText={(value) => {
             setPassword(value);
             setError(null);
+            setFieldErrors((current) => ({
+              ...current,
+              password: undefined,
+              confirmPassword: undefined,
+            }));
+          }}
+          onBlur={() => {
+            if (password.length < 8) {
+              setFieldErrors((current) => ({
+                ...current,
+                password: 'Use at least 8 characters for your password.',
+              }));
+            }
           }}
           onSubmitEditing={() => confirmPasswordRef.current?.focus()}
           password
@@ -102,10 +175,20 @@ export default function RegisterScreen() {
         <AuthField
           autoCapitalize="none"
           autoComplete="new-password"
+          error={fieldErrors.confirmPassword}
           label="Confirm password"
           onChangeText={(value) => {
             setConfirmPassword(value);
             setError(null);
+            setFieldErrors((current) => ({ ...current, confirmPassword: undefined }));
+          }}
+          onBlur={() => {
+            if (!confirmPassword || password !== confirmPassword) {
+              setFieldErrors((current) => ({
+                ...current,
+                confirmPassword: 'Make sure both passwords match.',
+              }));
+            }
           }}
           onSubmitEditing={register}
           password
@@ -114,19 +197,29 @@ export default function RegisterScreen() {
           returnKeyType="go"
           value={confirmPassword}
         />
-        {error ? <AppText color={colors.warning} variant="caption">{error}</AppText> : null}
         <AppButton
-          disabled={loading !== null}
+          disabled={loading !== null || !canSubmit}
           fullWidth
           label="Create account"
           loading={loading === 'email'}
           onPress={register}
         />
+        {error ? (
+          <View
+            accessibilityLiveRegion="polite"
+            accessibilityRole="alert"
+            style={styles.errorBanner}>
+            <Ionicons color={colors.warning} name="alert-circle-outline" size={20} />
+            <AppText color={colors.warning} style={styles.errorText} variant="caption">
+              {error}
+            </AppText>
+          </View>
+        ) : null}
       </View>
 
       <View style={styles.divider}>
         <View style={styles.line} />
-        <AppText color={colors.textMuted} variant="caption">or</AppText>
+        <AppText color={colors.textMuted} variant="caption">Or continue with</AppText>
         <View style={styles.line} />
       </View>
       <SocialAuthButton
@@ -134,25 +227,30 @@ export default function RegisterScreen() {
         loading={loading === 'social'}
         onPress={registerSocially}
       />
-      <Pressable
-        accessibilityRole="link"
-        onPress={() => router.replace('/login')}
-        style={styles.footerAction}>
-        <AppText color={colors.textMuted}>Already have an account? </AppText>
-        <AppText color={colors.secondary} variant="bodyStrong">Sign in</AppText>
-      </Pressable>
     </AuthScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  form: { gap: spacing.md },
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.xs,
+    padding: spacing.sm,
+    borderRadius: 12,
+    backgroundColor: colors.warningSoft,
+  },
+  errorText: { flex: 1 },
+  form: { gap: spacing.sm },
   divider: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   line: { height: 1, flex: 1, backgroundColor: colors.border },
   footerAction: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    paddingTop: spacing.xs,
+    gap: spacing.xxs,
+    minHeight: 48,
+    alignItems: 'center',
   },
+  footerLabel: { width: '100%', textAlign: 'center' },
 });

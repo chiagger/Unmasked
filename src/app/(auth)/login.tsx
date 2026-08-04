@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, TextInput, View } from 'react-native';
@@ -20,15 +21,22 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
   const [loading, setLoading] = useState<'email' | 'social' | null>(null);
   const normalizedEmail = email.trim();
+  const emailIsValid = emailPattern.test(normalizedEmail);
+  const canSubmit = emailIsValid && password.length > 0;
 
   const login = async () => {
-    if (!emailPattern.test(normalizedEmail) || !password) {
-      setError('Enter your email and password.');
+    if (!canSubmit) {
+      setFieldErrors({
+        email: emailIsValid ? undefined : 'Enter a valid email address.',
+        password: password ? undefined : 'Enter your password.',
+      });
       return;
     }
 
+    setFieldErrors({});
     setError(null);
     setLoading('email');
     try {
@@ -55,8 +63,8 @@ export default function LoginScreen() {
   };
 
   const requestReset = async () => {
-    if (!emailPattern.test(normalizedEmail)) {
-      setError('Enter your email first, then choose “Forgot password?”.');
+    if (!emailIsValid) {
+      setFieldErrors({ email: 'Enter your email before resetting your password.' });
       return;
     }
 
@@ -69,7 +77,36 @@ export default function LoginScreen() {
   };
 
   return (
-    <AuthScreen title="Welcome back" subtitle="Sign in at your own pace. Nothing here is urgent.">
+    <AuthScreen
+      eyebrow="Welcome back"
+      footer={
+        <Pressable
+          accessibilityRole="link"
+          onPress={() => router.push('/register')}
+          style={styles.footerAction}>
+          <AppText color={colors.textMuted} style={styles.footerLabel}>
+            New to Unmasked?
+          </AppText>
+          <AppText color={colors.primary} variant="bodyStrong">
+            Create an account
+          </AppText>
+        </Pressable>
+      }
+      notice={
+        error ? (
+          <View
+            accessibilityLiveRegion="polite"
+            accessibilityRole="alert"
+            style={styles.errorBanner}>
+            <Ionicons color={colors.warning} name="alert-circle-outline" size={20} />
+            <AppText color={colors.warning} style={styles.errorText} variant="caption">
+              {error}
+            </AppText>
+          </View>
+        ) : null
+      }
+      title="Sign in"
+      subtitle="Take your time. Nothing here is urgent.">
       <View style={styles.form}>
         <AuthField
           autoCapitalize="none"
@@ -79,10 +116,21 @@ export default function LoginScreen() {
           onChangeText={(value) => {
             setEmail(value);
             setError(null);
+            setFieldErrors((current) => ({ ...current, email: undefined }));
+          }}
+          onBlur={() => {
+            if (!emailIsValid) {
+              setFieldErrors((current) => ({
+                ...current,
+                email: 'Enter a valid email address.',
+              }));
+            }
           }}
           onSubmitEditing={() => passwordRef.current?.focus()}
           placeholder="you@example.com"
           returnKeyType="next"
+          error={fieldErrors.email}
+          valid={emailIsValid}
           value={email}
         />
         <AuthField
@@ -92,20 +140,30 @@ export default function LoginScreen() {
           onChangeText={(value) => {
             setPassword(value);
             setError(null);
+            setFieldErrors((current) => ({ ...current, password: undefined }));
+          }}
+          onBlur={() => {
+            if (!password) {
+              setFieldErrors((current) => ({ ...current, password: 'Enter your password.' }));
+            }
           }}
           onSubmitEditing={login}
           password
           placeholder="Your password"
           ref={passwordRef}
           returnKeyType="go"
+          error={fieldErrors.password}
           value={password}
         />
-        <Pressable accessibilityRole="button" onPress={requestReset} style={styles.textAction}>
-          <AppText color={colors.secondary} variant="label">Forgot password?</AppText>
+        <Pressable
+          accessibilityRole="button"
+          hitSlop={8}
+          onPress={requestReset}
+          style={styles.textAction}>
+          <AppText color={colors.primary} variant="caption">Reset password</AppText>
         </Pressable>
-        {error ? <AppText color={colors.warning} variant="caption">{error}</AppText> : null}
         <AppButton
-          disabled={loading !== null}
+          disabled={loading !== null || !canSubmit}
           fullWidth
           label="Sign in"
           loading={loading === 'email'}
@@ -115,7 +173,7 @@ export default function LoginScreen() {
 
       <View style={styles.divider}>
         <View style={styles.line} />
-        <AppText color={colors.textMuted} variant="caption">or</AppText>
+        <AppText color={colors.textMuted} variant="caption">Or continue with</AppText>
         <View style={styles.line} />
       </View>
 
@@ -124,26 +182,36 @@ export default function LoginScreen() {
         loading={loading === 'social'}
         onPress={loginSocially}
       />
-      <Pressable
-        accessibilityRole="link"
-        onPress={() => router.push('/register')}
-        style={styles.footerAction}>
-        <AppText color={colors.textMuted}>New here? </AppText>
-        <AppText color={colors.secondary} variant="bodyStrong">Create an account</AppText>
-      </Pressable>
     </AuthScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  form: { gap: spacing.md },
-  textAction: { alignSelf: 'flex-end', paddingVertical: spacing.xxs },
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.xs,
+    padding: spacing.sm,
+    borderRadius: 12,
+    backgroundColor: colors.warningSoft,
+  },
+  errorText: { flex: 1 },
+  form: { gap: spacing.sm },
+  textAction: {
+    alignSelf: 'flex-end',
+    minHeight: 32,
+    justifyContent: 'center',
+    marginTop: -spacing.xs,
+  },
   divider: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   line: { height: 1, flex: 1, backgroundColor: colors.border },
   footerAction: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    paddingTop: spacing.xs,
+    gap: spacing.xxs,
+    minHeight: 48,
+    alignItems: 'center',
   },
+  footerLabel: { width: '100%', textAlign: 'center' },
 });

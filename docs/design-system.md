@@ -33,3 +33,14 @@ neon colors, gradients, and large saturated areas.
   decorative motion.
 - Use only semantic tokens from `src/design-system/tokens.ts`; do not add screen-level
   hex values.
+
+### Welcome-screen hierarchy
+
+The welcome screen presents one decision path: understand the product promise, review
+three concrete benefits, receive a low-pressure reassurance, and start registration. The
+registration CTA is the only filled action. Sign-in is a two-line text route, and the
+registration hint states the approximate duration and that the profile can be shaped
+later.
+Feature rows pair short titles with practical descriptions, use dividers instead of large
+gaps, and reserve Sunflower for one compact focal icon. The screen remains scrollable for
+small devices and increased text sizes and does not use automatic decorative motion.

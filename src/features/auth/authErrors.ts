@@ -1,13 +1,16 @@
+const invalidCredentialMessage =
+  'We could not sign you in. Check your email and password, or reset your password.';
+
 const authErrorMessages: Record<string, string> = {
   'auth/email-already-in-use': 'An account already exists with this email.',
-  'auth/invalid-credential': 'Email or password is incorrect.',
+  'auth/invalid-credential': invalidCredentialMessage,
   'auth/invalid-email': 'Enter a valid email address.',
   'auth/network-request-failed': 'You seem to be offline. Check your connection and try again.',
   'auth/too-many-requests': 'Too many attempts. Take a short break and try again.',
   'auth/user-disabled': 'This account is currently unavailable.',
-  'auth/user-not-found': 'Email or password is incorrect.',
+  'auth/user-not-found': invalidCredentialMessage,
   'auth/weak-password': 'Use at least 8 characters for your password.',
-  'auth/wrong-password': 'Email or password is incorrect.',
+  'auth/wrong-password': invalidCredentialMessage,
 };
 
 function getAuthErrorCode(error: unknown) {

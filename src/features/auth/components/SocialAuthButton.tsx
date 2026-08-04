@@ -21,7 +21,7 @@ export function SocialAuthButton(props: SocialAuthButtonProps) {
         <Ionicons name={provider === 'apple' ? 'logo-apple' : 'logo-google'} size={20} />
       }
       label={`Continue with ${provider === 'apple' ? 'Apple' : 'Google'}`}
-      variant="secondary"
+      variant="social"
     />
   );
 }

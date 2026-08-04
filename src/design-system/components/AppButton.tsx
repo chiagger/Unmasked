@@ -3,7 +3,7 @@ import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { AppText } from '@/design-system/components/AppText';
 import { colors, layout, radii, spacing } from '@/design-system/tokens';
 
-type ButtonVariant = 'primary' | 'secondary' | 'quiet';
+type ButtonVariant = 'primary' | 'secondary' | 'social' | 'quiet';
 
 interface AppButtonProps {
   label: string;
@@ -26,6 +26,12 @@ export function AppButton({
   icon,
   accessibilityHint,
 }: AppButtonProps) {
+  const foregroundColor = disabled
+    ? colors.textMuted
+    : variant === 'primary'
+      ? colors.surfaceRaised
+      : colors.text;
+
   return (
     <Pressable
       accessibilityRole="button"
@@ -43,15 +49,13 @@ export function AppButton({
       ]}>
       <View style={styles.content}>
         {loading ? (
-          <ActivityIndicator
-            color={variant === 'primary' ? colors.surfaceRaised : colors.text}
-          />
+          <ActivityIndicator color={foregroundColor} />
         ) : (
           icon
         )}
         <AppText
           variant="label"
-          color={variant === 'primary' ? colors.surfaceRaised : colors.text}>
+          color={foregroundColor}>
           {label}
         </AppText>
       </View>
@@ -74,6 +78,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.secondary,
   },
+  social: {
+    backgroundColor: colors.surfaceRaised,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
   quiet: { backgroundColor: colors.surface },
   content: {
     flexDirection: 'row',
@@ -83,5 +92,9 @@ const styles = StyleSheet.create({
   },
   fullWidth: { alignSelf: 'stretch' },
   pressed: { opacity: 0.78 },
-  disabled: { opacity: 0.45 },
+  disabled: {
+    backgroundColor: colors.surfaceMuted,
+    borderColor: colors.border,
+    opacity: 1,
+  },
 });

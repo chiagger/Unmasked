@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import {
   AppButton,
@@ -33,11 +33,11 @@ export default function WelcomeScreen() {
   return (
     <Screen contentStyle={styles.content}>
       <View style={styles.brandMark} accessibilityElementsHidden>
-        <Ionicons color={colors.primary} name="leaf-outline" size={40} />
+        <Ionicons color={colors.primary} name="leaf-outline" size={32} />
       </View>
 
       <View style={styles.copy}>
-        <AppText variant="display">Friendship, without the performance.</AppText>
+        <AppText variant="display">Friendship without the pressure to perform.</AppText>
         <AppText color={colors.textMuted}>
           Meet neurodivergent people through shared interests, clear expectations,
           and sensory-friendly plans.
@@ -45,60 +45,100 @@ export default function WelcomeScreen() {
       </View>
 
       <Card style={styles.promiseCard}>
-        <PromiseRow icon="heart-outline" text="Platonic connections only" />
-        <PromiseRow icon="chatbubble-ellipses-outline" text="Direct communication" />
-        <PromiseRow icon="volume-low-outline" text="Low-pressure places" />
+        <PromiseRow
+          accent
+          description="Clear intentions from the beginning."
+          icon="heart-outline"
+          title="Platonic connections only"
+        />
+        <View style={styles.divider} />
+        <PromiseRow
+          description="Share expectations instead of decoding signals."
+          icon="chatbubble-ellipses-outline"
+          title="Direct communication"
+        />
+        <View style={styles.divider} />
+        <PromiseRow
+          description="Match around comfort and sensory needs."
+          icon="volume-low-outline"
+          title="Low-pressure plans"
+        />
       </Card>
+
+      <View style={styles.reassurance}>
+        <Ionicons color={colors.secondary} name="shield-checkmark-outline" size={20} />
+        <AppText color={colors.textMuted} style={styles.reassuranceText} variant="caption">
+          No swiping pressure. No read-receipt expectations. You choose your pace.
+        </AppText>
+      </View>
 
       <View style={styles.actions}>
         <AppButton
           fullWidth
-          label="Find your people"
+          label="Start finding your people"
           disabled={pendingDestination !== null}
           loading={pendingDestination === 'register'}
           onPress={() => openAuthForm('register')}
         />
-        <AppButton
-          fullWidth
-          label="I already have an account"
-          disabled={pendingDestination !== null}
-          loading={pendingDestination === 'login'}
-          onPress={() => openAuthForm('login')}
-          variant="quiet"
-        />
+        <AppText color={colors.textMuted} style={styles.timeHint} variant="caption">
+          About 3 minutes · You can shape your profile later
+        </AppText>
       </View>
 
-      <AppText color={colors.textMuted} style={styles.footnote} variant="caption">
-        No swiping pressure. No read-receipt expectations. You choose your pace.
-      </AppText>
+      <Pressable
+        accessibilityRole="link"
+        accessibilityState={{ disabled: pendingDestination !== null }}
+        disabled={pendingDestination !== null}
+        onPress={() => openAuthForm('login')}
+        style={styles.loginAction}>
+        <AppText color={colors.textMuted} style={styles.loginPrompt}>
+          Already have an account?
+        </AppText>
+        <AppText color={colors.primary} variant="bodyStrong">
+          {pendingDestination === 'login' ? 'Opening sign in…' : 'Sign in'}
+        </AppText>
+      </Pressable>
     </Screen>
   );
 }
 
-function PromiseRow({ icon, text }: { icon: React.ComponentProps<typeof Ionicons>['name']; text: string }) {
+interface PromiseRowProps {
+  accent?: boolean;
+  description: string;
+  icon: React.ComponentProps<typeof Ionicons>['name'];
+  title: string;
+}
+
+function PromiseRow({ accent = false, description, icon, title }: PromiseRowProps) {
   return (
     <View style={styles.promiseRow}>
-      <View style={styles.promiseIcon}>
-        <Ionicons color={colors.primary} name={icon} size={20} />
+      <View style={[styles.promiseIcon, accent && styles.promiseIconAccent]}>
+        <Ionicons color={accent ? colors.secondary : colors.primary} name={icon} size={20} />
       </View>
-      <AppText variant="bodyStrong">{text}</AppText>
+      <View style={styles.promiseCopy}>
+        <AppText variant="bodyStrong">{title}</AppText>
+        <AppText color={colors.textMuted} variant="caption">
+          {description}
+        </AppText>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { justifyContent: 'center', gap: spacing.xl },
+  content: { gap: spacing.lg, paddingTop: spacing.xl },
   brandMark: {
-    width: 72,
-    height: 72,
+    width: 56,
+    height: 56,
     borderRadius: radii.lg,
     backgroundColor: colors.primarySoft,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  copy: { gap: spacing.md },
-  promiseCard: { gap: spacing.md },
+  copy: { gap: spacing.sm },
+  promiseCard: { gap: spacing.sm, padding: spacing.md, shadowOpacity: 0.025, elevation: 1 },
   promiseRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  promiseCopy: { flex: 1, gap: spacing.xxs },
   promiseIcon: {
     width: 36,
     height: 36,
@@ -107,6 +147,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actions: { gap: spacing.sm },
-  footnote: { textAlign: 'center', paddingHorizontal: spacing.md },
+  promiseIconAccent: { backgroundColor: colors.secondarySoft },
+  divider: { height: 1, backgroundColor: colors.border, marginLeft: 48 },
+  reassurance: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    borderRadius: radii.md,
+    backgroundColor: colors.surface,
+    padding: spacing.sm,
+  },
+  reassuranceText: { flex: 1 },
+  actions: { gap: spacing.xs },
+  timeHint: { textAlign: 'center', paddingHorizontal: spacing.sm },
+  loginAction: {
+    minHeight: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xxs,
+  },
+  loginPrompt: { textAlign: 'center' },
 });
