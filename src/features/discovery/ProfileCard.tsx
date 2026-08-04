@@ -29,7 +29,9 @@ export function ProfileCard({ profile }: { profile: UserProfile }) {
     <Card style={styles.card}>
       <View style={styles.header}>
         <View style={styles.avatar}>
-          <AppText variant="title">{profile.displayName.slice(0, 1)}</AppText>
+          <AppText color={colors.secondary} variant="title">
+            {profile.displayName.slice(0, 1)}
+          </AppText>
         </View>
         <View style={styles.identity}>
           <AppText variant="heading">
@@ -51,7 +53,7 @@ export function ProfileCard({ profile }: { profile: UserProfile }) {
       <AppText>{profile.bio}</AppText>
 
       <View style={styles.section}>
-        <AppText color={colors.textMuted} variant="label">
+        <AppText color={colors.primary} variant="label">
           {profile.sharedInterestCount} shared interests
         </AppText>
         <View style={styles.pills}>
@@ -72,7 +74,7 @@ export function ProfileCard({ profile }: { profile: UserProfile }) {
         </View>
       </View>
 
-      <AppButton label="View connection profile" onPress={() => {}} variant="secondary" />
+      <AppButton label="View connection profile" onPress={() => {}} />
     </Card>
   );
 }
@@ -84,7 +86,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: radii.lg,
-    backgroundColor: colors.primarySoft,
+    backgroundColor: colors.secondarySoft,
     alignItems: 'center',
     justifyContent: 'center',
   },

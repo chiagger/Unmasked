@@ -1,23 +1,23 @@
 import { Platform, type TextStyle, type ViewStyle } from 'react-native';
 
 export const colors = {
-  canvas: '#F5F6F3',
-  surface: '#EFF2EF',
-  surfaceRaised: '#FFFEFC',
-  surfaceMuted: '#E7ECE9',
-  text: '#24302E',
-  textMuted: '#5F6B68',
-  primary: '#267A74',
-  primaryPressed: '#1F625E',
-  primarySoft: '#D8EAE7',
-  secondary: '#C96F5B',
-  secondarySoft: '#F4DED7',
+  canvas: '#F7F5F8',
+  surface: '#F1EEF3',
+  surfaceRaised: '#FFFCFA',
+  surfaceMuted: '#EAE7EC',
+  text: '#302B35',
+  textMuted: '#69626F',
+  primary: '#73558F',
+  primaryPressed: '#5D4475',
+  primarySoft: '#E9E2F0',
+  secondary: '#B95C2D',
+  secondarySoft: '#F6DED0',
   warning: '#A94F55',
   warningSoft: '#F8E0E1',
-  success: '#39745C',
-  successSoft: '#DCECE3',
-  border: '#D7DEDA',
-  focus: '#365FA0',
+  success: '#47715C',
+  successSoft: '#DFEBE4',
+  border: '#DED8E1',
+  focus: '#684D86',
 } as const;
 
 export const spacing = {

@@ -22,7 +22,7 @@ export default function ConnectionsScreen() {
           When you both choose to connect, your conversation will appear here. Silence is
           never treated as rejection.
         </AppText>
-        <AppButton label="Browse people" onPress={() => {}} variant="secondary" />
+        <AppButton label="Browse people" onPress={() => {}} />
       </Card>
     </Screen>
   );
