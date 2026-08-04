@@ -44,3 +44,13 @@ later.
 Feature rows pair short titles with practical descriptions, use dividers instead of large
 gaps, and reserve Sunflower for one compact focal icon. The screen remains scrollable for
 small devices and increased text sizes and does not use automatic decorative motion.
+
+### Bottom navigation
+
+The bottom tab bar derives its total height and bottom padding from the device safe-area
+inset. Its background extends to the physical screen edge, while its 64-point interactive
+area—and therefore all icons, labels, and touch targets—keeps the same height and remains
+above gesture handles and system navigation buttons. A soft Ocean capsule and filled icon
+identify the active destination without relying on color alone. Labels remain visible for
+every destination, each item preserves at least a 48-point touch target, and the bar hides
+while the keyboard is open to protect form space.
