@@ -1,29 +1,30 @@
 # Design system
 
-## Lavender & Tangerine palette
+## Ocean & Sunflower palette
 
-The interface uses an almost-neutral, grey-lavender canvas and softly warm ivory for
-raised surfaces. Lavender is the single functional color; Tangerine is a sparse accent.
-Color remains reserved for meaningful interaction. The interface avoids pure white, pure
-black, neon colors, gradients, and large saturated areas.
+The interface uses an almost-neutral, cool canvas and softly warm ivory for raised
+surfaces. Ocean is the single functional color; Sunflower is a sparse accent. Color
+remains reserved for meaningful interaction. The interface avoids pure white, pure black,
+neon colors, gradients, and large saturated areas.
 
 ### Semantic colors
 
-- **Lavender** (`primary`): primary actions, active navigation, positive availability, and
+- **Ocean** (`primary`): primary actions, active navigation, positive availability, and
   focus on the current task.
-- **Tangerine** (`secondary`): secondary actions, ratings, and small moments of
-  warmth. It should appear sparingly and never compete with the primary action.
+- **Sunflower** (`secondary`): secondary actions, ratings, and small moments of warmth.
+  Its deep ochre token keeps text and icons legible; its pale token is used for compact
+  surfaces. It should appear sparingly and never compete with the primary action.
 - **Rose** (`warning`): errors and destructive or cautionary feedback only.
-- **Grey-lavender and warm ivory** (`canvas`, `surface`, `surfaceRaised`, `surfaceMuted`):
+- **Cool neutral and warm ivory** (`canvas`, `surface`, `surfaceRaised`, `surfaceMuted`):
   page backgrounds, cards, controls, and quiet inactive states.
 
 ### Usage principles
 
-- Keep at least 80% of a screen neutral, use Lavender for functional emphasis, and
-  reserve Tangerine for one or two small accents per view.
-- Build hierarchy through intensity: full Lavender for the primary action, soft Lavender
+- Keep at least 80% of a screen neutral, use Ocean for functional emphasis, and reserve
+  Sunflower for one or two small accents per view.
+- Build hierarchy through intensity: full Ocean for the primary action, soft Ocean
   for related metadata, and neutral fills for supporting information.
-- Tangerine may mark one compact focal element such as an avatar or rating, but should
+- Sunflower may mark one compact focal element such as an avatar or rating, but should
   not be repeated across every chip or section.
 - Never communicate state through color alone; pair it with text, labels, or icons.
 - Prefer soft color tokens for chips and large areas. Full-strength colors are for icons,
