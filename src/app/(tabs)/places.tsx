@@ -25,15 +25,15 @@ export default function PlacesScreen() {
                 </AppText>
               </View>
               <View style={styles.rating}>
-                <Ionicons color={colors.primary} name="star" size={16} />
+                <Ionicons color={colors.secondary} name="star" size={16} />
                 <AppText variant="label">{venue.rating}</AppText>
               </View>
             </View>
             <View style={styles.pills}>
-              <Pill label={venue.sensory.noise} tone="sage" />
-              <Pill label={`${venue.sensory.lighting} light`} tone="slate" />
+              <Pill label={venue.sensory.noise} tone="primary" />
+              <Pill label={`${venue.sensory.lighting} light`} />
               <Pill label={venue.sensory.crowd} />
-              {venue.sensory.hasQuietSpace && <Pill label="Quiet space" tone="sage" />}
+              {venue.sensory.hasQuietSpace && <Pill label="Quiet space" tone="primary" />}
             </View>
           </Card>
         ))}

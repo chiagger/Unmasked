@@ -20,7 +20,7 @@ export default function ProfileScreen() {
       <Card style={styles.profileCard}>
         <View style={styles.profileHeading}>
           <AppText variant="heading">{user?.displayName || 'Your profile'}</AppText>
-          <Pill label="Setup 40% complete" tone="sage" />
+          <Pill label="Setup 40% complete" tone="primary" />
         </View>
         <AppText color={colors.textMuted}>
           {user?.email ?? 'Add interests, communication preferences, and boundaries.'}

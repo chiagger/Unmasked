@@ -1,22 +1,23 @@
 import { Platform, type TextStyle, type ViewStyle } from 'react-native';
 
 export const colors = {
-  canvas: '#F7F2EC',
-  surface: '#EEEAE4',
-  surfaceRaised: '#FBF8F4',
-  surfaceMuted: '#E5E1DA',
-  text: '#292B29',
-  textMuted: '#666B66',
-  primary: '#64745D',
-  primaryPressed: '#52604D',
-  primarySoft: '#DCE4D8',
-  secondary: '#687A86',
-  secondarySoft: '#DDE5E9',
-  warning: '#A97878',
-  warningSoft: '#F1DEDC',
-  success: '#607B67',
-  border: '#D7D2CA',
-  focus: '#43566A',
+  canvas: '#F5F6F3',
+  surface: '#EFF2EF',
+  surfaceRaised: '#FFFEFC',
+  surfaceMuted: '#E7ECE9',
+  text: '#24302E',
+  textMuted: '#5F6B68',
+  primary: '#267A74',
+  primaryPressed: '#1F625E',
+  primarySoft: '#D8EAE7',
+  secondary: '#C96F5B',
+  secondarySoft: '#F4DED7',
+  warning: '#A94F55',
+  warningSoft: '#F8E0E1',
+  success: '#39745C',
+  successSoft: '#DCECE3',
+  border: '#D7DEDA',
+  focus: '#365FA0',
 } as const;
 
 export const spacing = {
@@ -79,7 +80,7 @@ export const typography = {
 export const shadows = {
   soft: Platform.select<ViewStyle>({
     ios: {
-      shadowColor: '#292B29',
+      shadowColor: colors.text,
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.06,
       shadowRadius: 16,

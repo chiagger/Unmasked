@@ -44,7 +44,7 @@ export function ProfileCard({ profile }: { profile: UserProfile }) {
         </View>
         <Pill
           label={energyLabels[profile.energy]}
-          tone={profile.energy === 'open' ? 'sage' : 'neutral'}
+          tone={profile.energy === 'open' ? 'primary' : 'neutral'}
         />
       </View>
 
@@ -56,7 +56,7 @@ export function ProfileCard({ profile }: { profile: UserProfile }) {
         </AppText>
         <View style={styles.pills}>
           {profile.interests.map(interest => (
-            <Pill key={interest} label={interest} tone="sage" />
+            <Pill key={interest} label={interest} tone="primary" />
           ))}
         </View>
       </View>
@@ -67,7 +67,7 @@ export function ProfileCard({ profile }: { profile: UserProfile }) {
         </AppText>
         <View style={styles.pills}>
           {profile.connectionStyles.map(style => (
-            <Pill key={style} label={connectionLabels[style]} tone="slate" />
+            <Pill key={style} label={connectionLabels[style]} />
           ))}
         </View>
       </View>

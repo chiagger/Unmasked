@@ -15,7 +15,7 @@ export default function ConnectionsScreen() {
 
       <Card style={styles.emptyCard}>
         <View style={styles.icon}>
-          <Ionicons color={colors.secondary} name="chatbubbles-outline" size={28} />
+          <Ionicons color={colors.primary} name="chatbubbles-outline" size={28} />
         </View>
         <AppText variant="heading">No conversations yet</AppText>
         <AppText color={colors.textMuted} style={styles.centered}>
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: radii.pill,
-    backgroundColor: colors.secondarySoft,
+    backgroundColor: colors.primarySoft,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -5,14 +5,13 @@ import { colors, radii, spacing } from '@/design-system/tokens';
 
 interface PillProps {
   label: string;
-  tone?: 'sage' | 'slate' | 'neutral' | 'rose';
+  tone?: 'primary' | 'neutral' | 'warning';
 }
 
 const toneColors = {
-  sage: colors.primarySoft,
-  slate: colors.secondarySoft,
+  primary: colors.primarySoft,
   neutral: colors.surfaceMuted,
-  rose: colors.warningSoft,
+  warning: colors.warningSoft,
 };
 
 export function Pill({ label, tone = 'neutral' }: PillProps) {
@@ -26,7 +25,8 @@ export function Pill({ label, tone = 'neutral' }: PillProps) {
 const styles = StyleSheet.create({
   pill: {
     alignSelf: 'flex-start',
-    borderRadius: radii.pill,
+    borderRadius: radii.lg,
+    overflow: 'hidden',
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
   },

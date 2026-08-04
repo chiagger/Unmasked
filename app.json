@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "unmasked",
     "userInterfaceStyle": "light",
-    "backgroundColor": "#F7F2EC",
+    "backgroundColor": "#F5F6F3",
     "ios": {
       "icon": "./assets/expo.icon",
       "bundleIdentifier": "com.unmasked.unmasked",
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#F7F2EC",
+        "backgroundColor": "#F5F6F3",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -39,7 +39,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#F7F2EC",
+          "backgroundColor": "#F5F6F3",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }

@@ -33,7 +33,7 @@ Traditional social and friend-finding apps rely on high-pressure mechanics: vagu
 
 Unmasked is built from the ground up to prevent visual and sensory fatigue:
 
-- **Soft Palette:** Natural, low-saturation earth tones (Sage, Slate, Creams, and Deep Charcoal). Zero pure white (`#FFFFFF`) or pure black (`#000000`).
+- **Lagoon & Apricot palette:** Quiet neutral surfaces with calm Lagoon interactions and sparse Apricot accents. Zero pure white (`#FFFFFF`) or pure black (`#000000`).
 - **Low-Cognitive-Load UI:** Humanist sans-serif typography, left-aligned text blocks, generous line-spacing, and rounded UI components.
 - **Minimal Motion:** Respects system settings with strict constraints against unexpected animations or auto-playing visual noise.
 

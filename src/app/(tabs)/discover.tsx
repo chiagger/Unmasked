@@ -8,7 +8,7 @@ export default function DiscoverScreen() {
   return (
     <Screen>
       <View style={styles.header}>
-        <Pill label="Quiet discovery" tone="sage" />
+        <Pill label="Quiet discovery" tone="primary" />
         <AppText variant="display">People on your wavelength</AppText>
         <AppText color={colors.textMuted}>
           Ordered by shared interests and connection preferences — never by popularity.
