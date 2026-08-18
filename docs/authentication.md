@@ -119,8 +119,8 @@ profiles for discovery, while only the owner may create, update, or delete their
 
 Directional invitations live at `connectionRequests/{senderUid}_{recipientUid}`. The
 sender may create one pending request, both participants may read it, and only the
-recipient may transition it from pending to accepted or declined. Browsing the Discovery
-carousel writes nothing; only the explicit Connect action creates a request.
+recipient may transition it from pending to accepted or declined. Cycling through the
+Discovery deck writes nothing; only the explicit Connect action creates a request.
 
 Hidden profile IDs are owner-only account data on `users/{uid}`. Discovery excludes them,
 existing pending requests from a newly hidden profile are declined, and Firestore rules

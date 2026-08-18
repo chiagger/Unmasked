@@ -133,13 +133,16 @@ creating a clear field boundary without introducing pure white or heavy shadows.
 
 ### Discovery and connection requests
 
-Discovery is a reversible horizontal carousel: swiping left or right only navigates and
-never implies rejection or interest. Every unhidden profile remains available when the
-user swipes back or returns later. The carousel renders the exact shared public-profile
-card used by **My profile**, with its own vertical scroll viewport filling the remaining
-space above the tab bar. **Hide profile** and **Connect** are the final actions inside the
-card. Connect sends a directional request and leaves the card visible with its request
-status; Hide permanently removes the card after confirmation.
+Discovery is a circular profile deck with the previous and next cards peeking from its
+left and right edges. Dragging in either direction moves through the carousel and raises
+the card on that side into focus. Browsing never implies rejection or interest, so every
+unhidden profile cycles back into view. An incomplete drag springs back without changing
+profiles. The deck
+renders the exact shared public-profile card used by **My profile**, with its own vertical
+scroll viewport filling the remaining space above the tab bar. **Hide profile** and
+**Connect** remain deliberate circular actions in a thumb-area dock beneath the card.
+Connect sends a directional request and leaves the card visible with its request status;
+Hide removes it after confirmation.
 
 Pronouns are an essential profile choice with one-tap common presets. **Build my own
 pair** opens a focused bottom sheet with two Unicode-friendly text fields on either side

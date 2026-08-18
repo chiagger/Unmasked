@@ -24,11 +24,13 @@ export function PublicConnectionProfile({
   height,
   onEnergyPress,
   profile,
+  showScrollIndicator = true,
 }: {
   footer?: React.ReactNode;
   height?: number;
   onEnergyPress?: () => void;
   profile: EditableProfile;
+  showScrollIndicator?: boolean;
 }) {
   const goals = optionLabels(profile.connectionGoals, profileOptions.goals);
   const styles = optionLabels(profile.connectionStyles, profileOptions.styles);
@@ -144,7 +146,7 @@ export function PublicConnectionProfile({
         <ScrollView
           contentContainerStyle={stylesSheet.scrollContent}
           nestedScrollEnabled
-          showsVerticalScrollIndicator>
+          showsVerticalScrollIndicator={showScrollIndicator}>
           {content}
         </ScrollView>
       ) : content}

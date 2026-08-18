@@ -120,7 +120,7 @@ export default function DiscoverScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, gap: spacing.lg },
+  screen: { flex: 1, gap: spacing.lg, paddingBottom: spacing.xl },
   header: { flexDirection: 'row', alignItems: 'flex-end', gap: spacing.md },
   title: { flex: 1 },
   empty: { alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.xl },
