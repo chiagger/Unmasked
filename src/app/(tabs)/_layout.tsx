@@ -47,7 +47,7 @@ export default function TabsLayout() {
           </View>
         ),
       })}>
-      <Tabs.Screen name="discover" options={{ title: 'Discover' }} />
+      <Tabs.Screen name="discover" options={{ title: 'Discovery' }} />
       <Tabs.Screen name="connections" options={{ title: 'Connections' }} />
       <Tabs.Screen name="places" options={{ title: 'Calm places' }} />
       <Tabs.Screen name="profile" options={{ title: 'My profile' }} />

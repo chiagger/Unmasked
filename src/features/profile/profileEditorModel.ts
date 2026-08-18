@@ -9,7 +9,8 @@ import type {
 export interface EditableProfile {
   displayName: string;
   pronouns: string;
-  ageRange: string;
+  dateOfBirth: string;
+  age: number;
   city: string;
   languages: string;
   bio: string;
@@ -19,53 +20,62 @@ export interface EditableProfile {
   connectionGoals: ConnectionGoal[];
   connectionStyles: ConnectionStyle[];
   communication: CommunicationPreferences;
-  planningStyle: 'concrete' | 'flexible' | 'either';
+  planningStyle: '' | 'concrete' | 'flexible' | 'either';
   energy: EnergyLevel;
   energyNote: string;
   energyExpires: 'today' | 'tomorrow' | 'this-week';
   sensoryPreferences: string[];
   meetupPreferences: string[];
-  meetupDuration: '30-minutes' | 'one-hour' | 'flexible';
-  advanceNotice: 'same-day' | 'few-days' | 'one-week';
-  physicalGreeting: 'ask-first' | 'wave' | 'hug-okay';
-  calls: 'planned-only' | 'spontaneous-welcome' | 'no-calls';
-  photos: 'ask-first' | 'okay' | 'not-for-me';
+  advanceNotice: '' | 'same-day' | 'few-days' | 'one-week';
+  physicalGreeting: '' | 'ask-first' | 'wave' | 'hug-okay';
+  calls: '' | 'planned-only' | 'spontaneous-welcome' | 'no-calls';
+  photos: '' | 'ask-first' | 'okay' | 'not-for-me';
   identityNote: string;
   visibility: ProfileVisibility;
   showEnergy: boolean;
   showDistance: boolean;
 }
 
+export function requiredProfileFieldsComplete(profile: Partial<EditableProfile> | null) {
+  return Boolean(
+    profile?.displayName?.trim()
+      && profile.pronouns?.trim()
+      && profile.dateOfBirth?.trim()
+      && profile.city?.trim()
+      && profile.languages?.trim()
+      && profile.bio?.trim()
+      && profile.interests?.length,
+  );
+}
+
 export const initialProfile = (displayName = ''): EditableProfile => ({
   displayName,
   pronouns: '',
-  ageRange: '25–34',
+  dateOfBirth: '',
+  age: 0,
   city: '',
   languages: '',
   bio: '',
-  prompt: 'I can talk for hours about…',
+  prompt: '',
   promptAnswer: '',
   interests: [],
   connectionGoals: [],
   connectionStyles: [],
   communication: {
-    directness: 'direct',
-    responseTime: 'one-to-three-days',
-    toneIndicators: true,
-    followUpMessages: 'welcome',
-    preferredChannels: ['text'],
+    responseTime: '',
+    toneIndicators: null,
+    preferredChannels: [],
   },
-  planningStyle: 'concrete',
-  energy: 'open',
+  planningStyle: '',
+  energy: 3,
   energyNote: '',
   energyExpires: 'today',
   sensoryPreferences: [],
   meetupPreferences: [],
-  meetupDuration: 'one-hour',
-  advanceNotice: 'few-days',
-  physicalGreeting: 'ask-first',
-  calls: 'planned-only',
-  photos: 'ask-first',
+  advanceNotice: '',
+  physicalGreeting: '',
+  calls: '',
+  photos: '',
   identityNote: '',
   visibility: 'discoverable',
   showEnergy: true,
@@ -73,12 +83,10 @@ export const initialProfile = (displayName = ''): EditableProfile => ({
 });
 
 export const profileOptions = {
-  ageRanges: ['18–24', '25–34', '35–44', '45–54', '55+'],
   prompts: [
     'I can talk for hours about…',
     'A good afternoon for me looks like…',
     "We'll probably get along if…",
-    "Something I'd like to try with someone…",
   ],
   goals: [
     ['close-friendship', 'Close friendship'],

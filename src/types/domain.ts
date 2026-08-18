@@ -1,4 +1,4 @@
-export type EnergyLevel = 'open' | 'limited' | 'quiet';
+export type EnergyLevel = 1 | 2 | 3 | 4 | 5;
 
 export type ConnectionStyle =
   | 'parallel-play'
@@ -20,25 +20,9 @@ export type ConnectionGoal =
 export type ProfileVisibility = 'discoverable' | 'connections' | 'private';
 
 export interface CommunicationPreferences {
-  directness: 'direct' | 'gentle-direct';
-  responseTime: 'same-day' | 'one-to-three-days' | 'when-energy-allows';
-  toneIndicators: boolean;
-  followUpMessages?: 'welcome' | 'ask-first' | 'not-for-me';
+  responseTime: '' | 'same-day' | 'one-to-three-days' | 'when-energy-allows';
+  toneIndicators: boolean | null;
   preferredChannels?: ('text' | 'voice-notes' | 'calls' | 'in-person')[];
-}
-
-export interface UserProfile {
-  id: string;
-  displayName: string;
-  age: number;
-  city: string;
-  distanceKm: number;
-  bio: string;
-  interests: string[];
-  connectionStyles: ConnectionStyle[];
-  communication: CommunicationPreferences;
-  energy: EnergyLevel;
-  sharedInterestCount: number;
 }
 
 export interface SensoryProfile {

@@ -7,15 +7,16 @@ export function AuthRedirect() {
   const { isAuthLoading, user } = useAuth();
   const navigationState = useRootNavigationState();
   const segments = useSegments();
+  const routeGroup = segments[0] as string | undefined;
+  const userId = user?.uid;
 
   useEffect(() => {
     if (!navigationState?.key || isAuthLoading) return;
 
-    const routeGroup = segments[0] as string | undefined;
-    const isProtectedRoute = routeGroup === '(tabs)';
+    const isProtectedRoute = routeGroup === '(tabs)' || routeGroup === 'profile';
 
-    if (!user && isProtectedRoute) router.replace('/login');
-  }, [isAuthLoading, navigationState?.key, segments, user]);
+    if (!userId && isProtectedRoute) router.replace('/login');
+  }, [isAuthLoading, navigationState?.key, routeGroup, userId]);
 
   return null;
 }

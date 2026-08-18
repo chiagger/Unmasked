@@ -1,88 +1,174 @@
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText, Screen, ScreenHeader, colors, radii, spacing } from '@/design-system';
-import type { EditableProfile } from '@/features/profile/profileEditorModel';
+import {
+  requiredProfileFieldsComplete,
+  type EditableProfile,
+} from '@/features/profile/profileEditorModel';
+import {
+  getOpenedProfileChapters,
+  markProfileChapterOpened,
+  type ProfileChapterId,
+} from '@/features/profile/profileProgressService';
 import { useEditableProfile } from '@/features/profile/useEditableProfile';
+import { useAuth } from '@/providers/AuthProvider';
 
 type Chapter = {
-  id: 'personal' | 'connection' | 'comfort' | 'privacy';
+  id: ProfileChapterId;
   number: string;
   title: string;
   description: string;
-  status: (profile: EditableProfile) => string;
+  completion: (profile: EditableProfile) => number;
 };
+
+function completion(values: unknown[]) {
+  const completedFields = values.filter((value) => {
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value === 'string') return value.trim().length > 0;
+    if (typeof value === 'boolean') return true;
+    return value !== null && value !== undefined;
+  }).length;
+
+  return Math.round((completedFields / values.length) * 100);
+}
 
 const chapters: Chapter[] = [
   {
     id: 'personal', number: '01', title: 'My profile',
     description: 'How people get to know you',
-    status: profile => profile.displayName && profile.pronouns && profile.city ? 'Added' : 'Start here',
+    completion: profile => completion([
+      profile.displayName.trim(),
+      profile.pronouns,
+      profile.dateOfBirth,
+      profile.city.trim(),
+      profile.languages.trim(),
+      profile.bio.trim(),
+      profile.interests,
+      profile.prompt && profile.promptAnswer.trim(),
+      profile.identityNote.trim(),
+    ]),
   },
   {
     id: 'connection', number: '02', title: 'How I connect',
     description: 'Friendship, interests and communication',
-    status: profile => profile.connectionGoals.length && profile.connectionStyles.length ? 'Added' : 'Not added yet',
+    completion: profile => completion([
+      profile.connectionGoals,
+      profile.connectionStyles,
+      profile.communication.responseTime,
+      profile.communication.preferredChannels,
+      profile.planningStyle,
+      profile.communication.toneIndicators ?? false,
+    ]),
   },
   {
     id: 'comfort', number: '03', title: 'What feels comfortable',
     description: 'Sensory needs, meetups and boundaries',
-    status: profile => profile.sensoryPreferences.length || profile.meetupPreferences.length ? 'Added' : 'Optional',
+    completion: profile => completion([
+      profile.sensoryPreferences,
+      profile.meetupPreferences,
+      profile.advanceNotice,
+      profile.physicalGreeting,
+      profile.calls,
+      profile.photos,
+    ]),
   },
   {
     id: 'privacy', number: '04', title: 'Privacy and discovery',
     description: 'Choose how people can find you',
-    status: profile => profile.visibility === 'private' ? 'Discovery paused' : 'Discoverable',
+    completion: profile => completion([
+      profile.visibility,
+      profile.showDistance,
+      profile.showEnergy,
+    ]),
   },
 ];
 
 export default function EditProfileScreen() {
+  const { onboarding } = useLocalSearchParams<{ onboarding?: string }>();
+  const { user } = useAuth();
   const { loading, profile } = useEditableProfile();
-  const started = chapters.filter(chapter => chapter.status(profile) === 'Added').length;
+  const [openedChapters, setOpenedChapters] = useState<ProfileChapterId[]>([]);
+  const completed = chapters.filter(chapter =>
+    openedChapters.includes(chapter.id) && chapter.completion(profile) === 100,
+  ).length;
+  const requiredComplete = requiredProfileFieldsComplete(profile);
+  const isOnboarding = onboarding === '1';
+
+  useFocusEffect(useCallback(() => {
+    if (!user) return;
+    let active = true;
+    getOpenedProfileChapters(user.uid).then(opened => {
+      if (active) setOpenedChapters(opened);
+    }).catch(() => undefined);
+    return () => { active = false; };
+  }, [user]));
+
+  const openChapter = (chapter: ProfileChapterId) => {
+    if (user && !openedChapters.includes(chapter)) {
+      setOpenedChapters(current => [...current, chapter]);
+      markProfileChapterOpened(user.uid, chapter).catch(() => undefined);
+    }
+    router.push(`/profile/edit/${chapter}`);
+  };
 
   return (
     <Screen
       contentStyle={styles.screen}
-      header={<ScreenHeader backLabel="Back to my profile" onBack={() => router.back()} title="Edit profile" />}>
+      header={
+        <ScreenHeader
+          actionLabel={isOnboarding && requiredComplete && !loading ? 'Continue' : undefined}
+          backLabel="Back to my profile"
+          onAction={isOnboarding && requiredComplete ? () => router.replace('/(tabs)/profile') : undefined}
+          onBack={isOnboarding ? undefined : () => router.back()}
+          title={isOnboarding ? 'Complete your profile' : 'Edit profile'}
+        />
+      }>
       <View style={styles.identity}>
         <View style={styles.avatar}>
           <AppText color={colors.secondary} variant="title">{(profile.displayName || '?')[0].toUpperCase()}</AppText>
         </View>
         <View style={styles.identityCopy}>
           <AppText variant="title">{profile.displayName || 'Your profile'}</AppText>
-          <AppText color={colors.textMuted}>{loading ? 'Loading your profile…' : started ? `${started} of 4 areas started` : 'Ready to shape in your own time'}</AppText>
+          <AppText color={colors.textMuted}>{loading ? 'Loading your profile…' : completed ? `${completed} of 4 areas complete` : 'Ready to shape in your own time'}</AppText>
         </View>
       </View>
 
       <View style={styles.reassurance}>
         <Ionicons color={colors.primary} name="leaf-outline" size={20} />
         <AppText color={colors.textMuted} style={styles.reassuranceCopy} variant="caption">
-          Add only what feels useful. Your profile is ready to use without completing every area.
+          {isOnboarding
+            ? 'Complete the required parts of My profile before entering the app. Optional details can wait.'
+            : 'Add only what feels useful. You can change every detail whenever you like.'}
         </AppText>
       </View>
 
       <View style={styles.journey}>
         {chapters.map((chapter, index) => {
-          const status = chapter.status(profile);
-          const active = status === 'Added' || status === 'Discoverable';
+          const chapterCompletion = openedChapters.includes(chapter.id)
+            ? chapter.completion(profile)
+            : 0;
+          const complete = chapterCompletion === 100;
+          const started = chapterCompletion > 0;
           return (
             <View key={chapter.id} style={styles.chapterShell}>
               <View style={styles.markerColumn}>
-                <View style={[styles.marker, active && styles.markerActive]}>
-                  {active ? <Ionicons color={colors.surfaceRaised} name="checkmark" size={16} /> : <AppText color={colors.textMuted} variant="caption">{chapter.number}</AppText>}
+                <View style={[styles.marker, started && styles.markerStarted, complete && styles.markerComplete]}>
+                  <AppText color={complete ? colors.surfaceRaised : started ? colors.primary : colors.textMuted} variant="caption">{chapter.number}</AppText>
                 </View>
                 {index < chapters.length - 1 ? <View style={styles.journeyLine} /> : null}
               </View>
               <Pressable
                 accessibilityHint={`Opens ${chapter.title}`}
                 accessibilityRole="button"
-                onPress={() => router.push(`/profile/edit/${chapter.id}`)}
+                onPress={() => openChapter(chapter.id)}
                 style={({ pressed }) => [styles.chapter, pressed && styles.chapterPressed]}>
                 <View style={styles.chapterCopy}>
                   <AppText variant="heading">{chapter.title}</AppText>
                   <AppText color={colors.textMuted} variant="caption">{chapter.description}</AppText>
-                  <AppText color={active ? colors.primary : colors.textMuted} variant="label">{status}</AppText>
+                  <AppText color={started ? colors.primary : colors.textMuted} variant="label">{chapterCompletion}% complete</AppText>
                 </View>
                 <Ionicons color={colors.primary} name="chevron-forward" size={22} />
               </Pressable>
@@ -105,7 +191,8 @@ const styles = StyleSheet.create({
   chapterShell: { flexDirection: 'row', alignItems: 'stretch' },
   markerColumn: { width: 40, alignItems: 'center' },
   marker: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center', borderRadius: radii.pill, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.canvas },
-  markerActive: { borderColor: colors.primary, backgroundColor: colors.primary },
+  markerStarted: { borderColor: colors.primary, backgroundColor: colors.primarySoft },
+  markerComplete: { backgroundColor: colors.primary },
   journeyLine: { width: 1, flex: 1, minHeight: 88, backgroundColor: colors.border },
   chapter: { flex: 1, minHeight: 120, flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginLeft: spacing.sm, marginBottom: spacing.md, padding: spacing.md, borderRadius: radii.md },
   chapterPressed: { backgroundColor: colors.surface },

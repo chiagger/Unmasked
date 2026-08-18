@@ -20,6 +20,25 @@ service cloud.firestore {
       allow delete: if isOwner(userId);
     }
 
+    match /connectionRequests/{requestId} {
+      allow read: if request.auth != null
+        && (resource.data.senderId == request.auth.uid
+          || resource.data.recipientId == request.auth.uid);
+      allow create: if request.auth != null
+        && request.resource.data.senderId == request.auth.uid
+        && request.resource.data.recipientId != request.auth.uid
+        && request.resource.data.status == 'pending'
+        && !(request.auth.uid in get(/databases/$(database)/documents/users/$(request.resource.data.recipientId)).data.get('hiddenProfileIds', []))
+        && requestId == request.auth.uid + '_' + request.resource.data.recipientId;
+      allow update: if request.auth != null
+        && resource.data.recipientId == request.auth.uid
+        && resource.data.status == 'pending'
+        && request.resource.data.status in ['accepted', 'declined']
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'updatedAt']);
+      allow delete: if false;
+    }
+
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
     }

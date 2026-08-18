@@ -116,6 +116,25 @@ model rather than exposing private auth identity fields.
 
 Editable connection profiles live at `profiles/{uid}`. Authenticated users may read
 profiles for discovery, while only the owner may create, update, or delete their profile.
+
+Directional invitations live at `connectionRequests/{senderUid}_{recipientUid}`. The
+sender may create one pending request, both participants may read it, and only the
+recipient may transition it from pending to accepted or declined. Browsing the Discovery
+carousel writes nothing; only the explicit Connect action creates a request.
+
+Hidden profile IDs are owner-only account data on `users/{uid}`. Discovery excludes them,
+existing pending requests from a newly hidden profile are declined, and Firestore rules
+reject future request creation when the recipient has hidden the sender.
+
+Authenticated accounts are gated on profile setup before any application tab is rendered.
+Registration routes directly to the profile-completeness index. Display name, pronouns,
+date of birth, city, languages, the activity introduction, and at least one interest must be
+saved before the user can continue. Discovery also filters out profiles that do not meet
+the same required-field predicate, including older incomplete accounts.
+
+Exact dates of birth are stored only on the owner-readable `users/{uid}` document. Saving
+a profile calculates a numeric age for `profiles/{uid}`, removes legacy age-range and any
+date-of-birth fields from that public document, and publishes only the numeric age.
 The private `users/{uid}` document remains owner-readable and contains authentication
 identity only.
 

@@ -81,13 +81,121 @@ export function FormField({ label, hint, multiline, style, ...props }: TextInput
   );
 }
 
+export function InlineAddField({
+  value,
+  onChangeText,
+  onAdd,
+  placeholder,
+}: {
+  value: string;
+  onChangeText: (value: string) => void;
+  onAdd: () => void;
+  placeholder: string;
+}) {
+  const disabled = !value.trim();
+  return (
+    <View style={styles.inlineInputShell}>
+      <TextInput
+        accessibilityLabel="Add an interest"
+        onChangeText={onChangeText}
+        onSubmitEditing={onAdd}
+        placeholder={placeholder}
+        placeholderTextColor={colors.textMuted}
+        returnKeyType="done"
+        selectionColor={colors.primary}
+        style={styles.inlineInput}
+        value={value}
+      />
+      <Pressable
+        accessibilityLabel="Add interest"
+        accessibilityRole="button"
+        accessibilityState={{ disabled }}
+        disabled={disabled}
+        onPress={onAdd}
+        style={[styles.inlineAdd, disabled && styles.inlineAddDisabled]}>
+        <Ionicons color={disabled ? colors.textMuted : colors.surfaceRaised} name="add" size={22} />
+      </Pressable>
+    </View>
+  );
+}
+
+const commonLanguages = [
+  'English',
+  'Italian',
+  'Spanish',
+  'French',
+  'German',
+  'Portuguese',
+  'Arabic',
+  'Mandarin Chinese',
+  'Hindi',
+] as const;
+
+export function LanguagePicker({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const selected = value.split(',').map(language => language.trim()).filter(Boolean);
+  const [customLanguage, setCustomLanguage] = useState('');
+
+  const commit = (languages: string[]) => onChange(languages.join(', '));
+  const toggle = (language: string) => commit(
+    selected.includes(language)
+      ? selected.filter(item => item !== language)
+      : [...selected, language],
+  );
+  const addCustom = () => {
+    const language = customLanguage.trim();
+    if (!language || selected.some(item => item.toLocaleLowerCase() === language.toLocaleLowerCase())) return;
+    commit([...selected, language]);
+    setCustomLanguage('');
+  };
+
+  return (
+    <View style={styles.field}>
+      <AppText variant="label">Languages you’re comfortable using</AppText>
+      <AppText color={colors.textMuted} variant="caption">Choose at least one. Add another language if it isn’t listed.</AppText>
+      <View style={styles.choices}>
+        {commonLanguages.map(language => {
+          const isSelected = selected.includes(language);
+          return (
+            <Pressable
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: isSelected }}
+              key={language}
+              onPress={() => toggle(language)}
+              style={[styles.choice, isSelected && styles.choiceSelected]}>
+              {isSelected ? <Ionicons color={colors.primary} name="checkmark" size={16} /> : null}
+              <AppText color={isSelected ? colors.primary : colors.text} variant="caption">{language}</AppText>
+            </Pressable>
+          );
+        })}
+        {selected.filter(language => !commonLanguages.includes(language as typeof commonLanguages[number])).map(language => (
+          <Pressable
+            accessibilityHint="Removes this language"
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: true }}
+            key={language}
+            onPress={() => toggle(language)}
+            style={[styles.choice, styles.choiceSelected]}>
+            <Ionicons color={colors.primary} name="checkmark" size={16} />
+            <AppText color={colors.primary} variant="caption">{language}</AppText>
+          </Pressable>
+        ))}
+      </View>
+      <InlineAddField onAdd={addCustom} onChangeText={setCustomLanguage} placeholder="Add another language" value={customLanguage} />
+    </View>
+  );
+}
+
 export function ChoiceGroup<T extends string>({
   label,
+  hint,
+  allowDeselect = false,
   options,
   value,
   onChange,
 }: {
   label: string;
+  hint?: string;
+  allowDeselect?: boolean;
   options: readonly (readonly [T, string])[];
   value: T;
   onChange: (value: T) => void;
@@ -95,6 +203,7 @@ export function ChoiceGroup<T extends string>({
   return (
     <View style={styles.field}>
       <AppText variant="label">{label}</AppText>
+      {hint ? <AppText color={colors.textMuted} variant="caption">{hint}</AppText> : null}
       <View accessibilityRole="radiogroup" style={styles.choices}>
         {options.map(([option, optionLabel]) => {
           const selected = value === option;
@@ -103,7 +212,7 @@ export function ChoiceGroup<T extends string>({
               accessibilityRole="radio"
               accessibilityState={{ checked: selected }}
               key={option}
-              onPress={() => onChange(option)}
+              onPress={() => onChange(selected && allowDeselect ? '' as T : option)}
               style={[styles.choice, selected && styles.choiceSelected]}>
               {selected ? <Ionicons color={colors.primary} name="checkmark" size={16} /> : null}
               <AppText color={selected ? colors.primary : colors.text} variant="caption">
@@ -382,13 +491,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radii.md,
-    backgroundColor: colors.canvas,
+    backgroundColor: colors.surfaceRaised,
     color: colors.text,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     ...typography.body,
   },
-  multiline: { minHeight: 112 },
+  multiline: { minHeight: 88 },
+  inlineInputShell: { minHeight: layout.minimumTouchTarget, flexDirection: 'row', alignItems: 'center', gap: spacing.xs, borderWidth: 1, borderColor: colors.border, borderRadius: radii.md, backgroundColor: colors.surfaceRaised, paddingLeft: spacing.md, paddingRight: spacing.xs },
+  inlineInput: { flex: 1, color: colors.text, paddingVertical: spacing.sm, ...typography.body },
+  inlineAdd: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: radii.md, backgroundColor: colors.primary },
+  inlineAddDisabled: { backgroundColor: colors.surfaceMuted },
   choices: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
   choice: {
     minHeight: 42,
@@ -426,6 +539,6 @@ const styles = StyleSheet.create({
   cancelButton: { minHeight: layout.minimumTouchTarget, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.xs },
   customInputs: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   customSide: { flex: 1, gap: spacing.xxs },
-  customInput: { minHeight: layout.minimumTouchTarget, borderWidth: 1, borderColor: colors.border, borderRadius: radii.md, backgroundColor: colors.canvas, color: colors.text, paddingHorizontal: spacing.md, ...typography.body },
+  customInput: { minHeight: layout.minimumTouchTarget, borderWidth: 1, borderColor: colors.border, borderRadius: radii.md, backgroundColor: colors.surfaceRaised, color: colors.text, paddingHorizontal: spacing.md, ...typography.body },
   slash: { minWidth: 16, paddingTop: spacing.lg, textAlign: 'center' },
 });

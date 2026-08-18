@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { colors } from '@/design-system';
 import { AuthGate } from '@/features/auth/AuthGate';
 import { AuthRedirect } from '@/features/auth/AuthRedirect';
+import { ProfileCompletionGate } from '@/features/profile/ProfileCompletionGate';
 import { AccessibilityProvider } from '@/providers/AccessibilityProvider';
 import { AuthProvider } from '@/providers/AuthProvider';
 
@@ -18,7 +19,9 @@ export default function RootLayout() {
             <StatusBar style="dark" />
             <AuthRedirect />
             <AuthGate>
-              <Stack screenOptions={{ headerShown: false }} />
+              <ProfileCompletionGate>
+                <Stack screenOptions={{ headerShown: false }} />
+              </ProfileCompletionGate>
             </AuthGate>
           </View>
         </AuthProvider>

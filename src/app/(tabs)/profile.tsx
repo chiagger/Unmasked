@@ -1,69 +1,131 @@
-import { router } from 'expo-router';
-import { StyleSheet, Switch, View } from 'react-native';
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { useState } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
 
-import { AppButton, AppText, Card, Pill, Screen, colors, spacing } from '@/design-system';
-import { useAccessibilityPreferences } from '@/providers/AccessibilityProvider';
-import { useAuth } from '@/providers/AuthProvider';
-import { EnergyQuickStatus } from '@/features/profile/components/EnergyQuickStatus';
+import {
+  AppButton,
+  AppText,
+  Card,
+  Pill,
+  Screen,
+  colors,
+  layout,
+  radii,
+  spacing,
+} from "@/design-system";
+import { EnergyQuickStatus } from "@/features/profile/components/EnergyQuickStatus";
+import { PublicConnectionProfile } from "@/features/profile/components/PublicConnectionProfile";
+import { useEditableProfile } from "@/features/profile/useEditableProfile";
+import { useAuth } from "@/providers/AuthProvider";
+import type { EnergyLevel } from "@/types/domain";
 
 export default function ProfileScreen() {
-  const { reduceMotion, setReduceMotion } = useAccessibilityPreferences();
   const { logout, user } = useAuth();
+  const { loading, profile, save, saving, setProfile } = useEditableProfile();
+  const [batteryOpen, setBatteryOpen] = useState(false);
+
+  const changeEnergy = async (energy: EnergyLevel) => {
+    const previousProfile = profile;
+    const nextProfile = { ...profile, energy };
+    setProfile(nextProfile);
+
+    try {
+      await save(nextProfile);
+    } catch {
+      setProfile(previousProfile);
+    }
+  };
 
   return (
-    <Screen>
-      <View style={styles.header}>
-        <AppText variant="display">Your space</AppText>
-        <AppText color={colors.textMuted}>
-          Make your needs visible without having to explain them every time.
-        </AppText>
-      </View>
-
-      <Card style={styles.profileCard}>
-        <View style={styles.profileHeading}>
-          <AppText variant="heading">{user?.displayName || 'Your profile'}</AppText>
-          <Pill label="Setup 40% complete" tone="primary" />
-        </View>
-        <AppText color={colors.textMuted}>
-          {user?.email ?? 'Add interests, communication preferences, and boundaries.'}
-        </AppText>
-        <AppButton fullWidth label="Edit my profile" onPress={() => router.push('/profile/edit')} />
-      </Card>
-
-      <EnergyQuickStatus />
-
-      <View style={styles.section}>
-        <AppText variant="heading">Comfort settings</AppText>
-        <Card style={styles.settingRow}>
-          <View style={styles.settingCopy}>
-            <AppText variant="bodyStrong">Reduce motion</AppText>
-            <AppText color={colors.textMuted} variant="caption">
-              Removes non-essential transitions and movement.
-            </AppText>
+    <Screen
+      header={
+        <View style={styles.headerTitle}>
+          <View style={styles.headerCopy}>
+            <AppText variant="display">Your profile</AppText>
           </View>
-          <Switch
-            accessibilityLabel="Reduce motion"
-            onValueChange={setReduceMotion}
-            trackColor={{ false: colors.surfaceMuted, true: colors.primarySoft }}
-            thumbColor={reduceMotion ? colors.primary : colors.textMuted}
-            value={reduceMotion}
+          <AppButton
+            label="Edit"
+            onPress={() => router.push("/profile/edit")}
+            variant="quiet"
           />
-        </Card>
+          <Pressable
+            accessibilityLabel="Sign out"
+            accessibilityRole="button"
+            onPress={logout}
+            style={({ pressed }) => [
+              styles.signOutButton,
+              pressed && styles.signOutPressed,
+            ]}
+          >
+            <Ionicons
+              color={colors.warning}
+              name="log-out-outline"
+              size={22}
+            />
+          </Pressable>
+        </View>
+      }>
+
+      <View style={styles.previewLabel}>
+        <Pill label="Public preview" tone="primary" />
+        <AppText color={colors.textMuted} variant="caption">
+          {profile.visibility === "private"
+            ? "Discovery is paused"
+            : "This is what other people see."}
+        </AppText>
       </View>
 
-      <View style={styles.section}>
-        <AppText variant="heading">Account</AppText>
-        <AppButton fullWidth label="Sign out" onPress={logout} variant="secondary" />
-      </View>
+      {loading ? (
+        <Card>
+          <AppText color={colors.textMuted}>Loading your profile…</AppText>
+        </Card>
+      ) : (
+        <View style={styles.publicProfile}>
+          <PublicConnectionProfile
+            onEnergyPress={() => setBatteryOpen(true)}
+            profile={{
+              ...profile,
+              displayName: profile.displayName || user?.displayName || "",
+            }}
+          />
+        </View>
+      )}
+
+      <EnergyQuickStatus
+        energy={profile.energy}
+        loading={loading}
+        onClose={() => setBatteryOpen(false)}
+        onChange={changeEnergy}
+        saving={saving}
+        visible={batteryOpen}
+      />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { gap: spacing.sm, marginBottom: spacing.xl },
-  profileCard: { gap: spacing.md },
-  profileHeading: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.sm },
-  section: { gap: spacing.sm, marginTop: spacing.xl },
-  settingRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  settingCopy: { flex: 1, gap: spacing.xxs },
+  headerTitle: {
+    minHeight: 64,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+  },
+  headerCopy: { flex: 1, gap: spacing.xs },
+  signOutButton: {
+    width: layout.minimumTouchTarget,
+    height: layout.minimumTouchTarget,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: radii.pill,
+  },
+  signOutPressed: { backgroundColor: colors.surface },
+  previewLabel: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
+  },
+  publicProfile: { marginBottom: spacing.xl },
 });

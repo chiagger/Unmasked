@@ -68,7 +68,7 @@ export default function WelcomeScreen() {
       <View style={styles.reassurance}>
         <Ionicons color={colors.secondary} name="shield-checkmark-outline" size={20} />
         <AppText color={colors.textMuted} style={styles.reassuranceText} variant="caption">
-          No swiping pressure. No read-receipt expectations. You choose your pace.
+          No popularity scores. No read-receipt expectations. You choose your pace.
         </AppText>
       </View>
 
@@ -81,7 +81,7 @@ export default function WelcomeScreen() {
           onPress={() => openAuthForm('register')}
         />
         <AppText color={colors.textMuted} style={styles.timeHint} variant="caption">
-          About 3 minutes · You can shape your profile later
+          About 3 minutes · Your required profile comes first
         </AppText>
       </View>
 

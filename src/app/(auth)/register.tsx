@@ -56,7 +56,7 @@ export default function RegisterScreen() {
     setLoading('email');
     try {
       await registerWithEmail({ displayName, email: normalizedEmail, password });
-      router.replace('/(tabs)/discover');
+      router.replace('/profile/edit?onboarding=1');
     } catch (authError) {
       setError(getAuthErrorMessage(authError));
     } finally {
@@ -69,7 +69,7 @@ export default function RegisterScreen() {
     setLoading('social');
     try {
       const credential = await loginWithSocialProvider();
-      if (credential) router.replace('/(tabs)/discover');
+      if (credential) router.replace('/profile/edit?onboarding=1');
     } catch (authError) {
       setError(getAuthErrorMessage(authError));
     } finally {
@@ -92,7 +92,7 @@ export default function RegisterScreen() {
       }
       eyebrow="New here"
       title="Create your space"
-      subtitle="A quiet profile you can shape over time.">
+      subtitle="Create your account, then complete the profile people will see.">
       <View style={styles.form}>
         <AuthField
           autoCapitalize="words"

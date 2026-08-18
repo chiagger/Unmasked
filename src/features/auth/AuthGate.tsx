@@ -7,7 +7,8 @@ import { useAuth } from '@/providers/AuthProvider';
 export function AuthGate({ children }: { children: React.ReactNode }) {
   const { isAuthLoading, user } = useAuth();
   const segments = useSegments();
-  const isRedirectPending = !user && segments[0] === '(tabs)';
+  const routeGroup = segments[0] as string | undefined;
+  const isRedirectPending = !user && (routeGroup === '(tabs)' || routeGroup === 'profile');
 
   if (isAuthLoading || isRedirectPending) {
     return (
