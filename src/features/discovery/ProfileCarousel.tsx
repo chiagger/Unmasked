@@ -33,8 +33,9 @@ export function ProfileCarousel({
   const list = useRef<FlatList<DiscoveryProfile>>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
   const [size, setSize] = useState({ height: 360, width: 320 });
-  const sideInset = spacing.md;
-  const cardGap = spacing.sm;
+  // Leave enough of the next card visible to make horizontal browsing obvious.
+  const sideInset = spacing.lg;
+  const cardGap = spacing.xs;
   const cardWidth = Math.max(240, size.width - sideInset * 2);
   const snapInterval = cardWidth + cardGap;
 
@@ -175,7 +176,7 @@ export function ProfileCarousel({
 
 const styles = StyleSheet.create({
   carousel: { flex: 1, minHeight: 0, overflow: 'visible' },
-  carouselGap: { width: spacing.sm },
+  carouselGap: { width: spacing.xs },
   page: { overflow: 'visible' },
   footer: {
     flexDirection: 'row',
