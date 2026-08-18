@@ -24,8 +24,22 @@ npm start
 If Android reports `INSTALL_FAILED_INSUFFICIENT_STORAGE`, free space or wipe the
 virtual device from Android Studio Device Manager before retrying.
 
+Android uses Expo's `softwareKeyboardLayoutMode: "pan"` so text inputs inside bottom
+drawers do not compete with a second JavaScript height adjustment. Because this is native
+app configuration, rebuild the Android development client after changing that setting.
+
 Authentication provider setup and native rebuild requirements are documented
 in [authentication.md](./authentication.md).
+
+This project intentionally uses the named Enterprise Firestore database `default`, not
+Firebase's conventional `(default)` database. Deploy its rules with the explicit selector:
+
+```bash
+firebase deploy --only firestore:default --project unmasked-b62af
+```
+
+Do not replace the Firestore array in `firebase.json` with the default single-database
+object form; that form targets `(default)` instead of the database used by the app.
 
 ## City autocomplete
 

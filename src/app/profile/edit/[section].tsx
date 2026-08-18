@@ -13,6 +13,7 @@ import {
 } from "@/design-system";
 import { CityAutocomplete } from "@/features/profile/components/CityAutocomplete";
 import { DateOfBirthPicker } from "@/features/profile/components/DateOfBirthPicker";
+import { ProfilePhotoPicker } from "@/features/profile/components/ProfilePhotoPicker";
 import {
   ChoiceGroup,
   FormField,
@@ -27,6 +28,7 @@ import {
   requiredProfileFieldsComplete,
 } from "@/features/profile/profileEditorModel";
 import { useEditableProfile } from "@/features/profile/useEditableProfile";
+import { useAuth } from "@/providers/AuthProvider";
 
 const pairs = <T extends string>(items?: readonly T[]) =>
   (items ?? []).map((item) => [item, item] as const);
@@ -54,6 +56,7 @@ export default function EditProfileChapterScreen() {
       ? (section as keyof typeof chapterCopy)
       : "personal";
   const { loading, profile, save, saving, update } = useEditableProfile();
+  const { user } = useAuth();
   const [interest, setInterest] = useState("");
   const [moreOpen, setMoreOpen] = useState(false);
   const requiredFieldsIncomplete =
@@ -120,6 +123,14 @@ export default function EditProfileChapterScreen() {
                 description="The details people will see first."
                 label="About you"
               />
+              {user ? (
+                <ProfilePhotoPicker
+                  name={profile.displayName}
+                  onChange={(value) => update("photoUrl", value)}
+                  photoUrl={profile.photoUrl}
+                  userId={user.uid}
+                />
+              ) : null}
               <FormField
                 label="Display name"
                 onChangeText={(value) => update("displayName", value)}

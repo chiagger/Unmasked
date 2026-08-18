@@ -8,6 +8,7 @@ import type {
 
 export interface EditableProfile {
   displayName: string;
+  photoUrl?: string;
   pronouns: string;
   dateOfBirth: string;
   age: number;

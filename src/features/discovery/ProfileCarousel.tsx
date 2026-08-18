@@ -13,7 +13,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { AppText, colors, radii, shadows, spacing } from '@/design-system';
+import { colors, radii, shadows, spacing } from '@/design-system';
 import type { DiscoveryProfile } from '@/features/discovery/discoveryService';
 import { PublicConnectionProfile } from '@/features/profile/components/PublicConnectionProfile';
 
@@ -27,7 +27,7 @@ interface ProfileCarouselProps {
 
 const VISIBLE_CARD_COUNT = 3;
 const SIDE_PEEK = spacing.lg;
-const ACTION_DOCK_HEIGHT = 92;
+const ACTION_DOCK_HEIGHT = 88;
 
 export function ProfileCarousel({
   index,
@@ -270,6 +270,11 @@ function ActionDock({
     : status === 'declined'
       ? colors.warning
       : colors.textMuted;
+  const statusTone = status === 'accepted'
+    ? styles.acceptedButton
+    : status === 'declined'
+      ? styles.declinedButton
+      : styles.pendingButton;
 
   return (
     <View style={styles.actionDock}>
@@ -284,9 +289,8 @@ function ActionDock({
             styles.hideButton,
             pressed && styles.actionPressed,
           ]}>
-          <Ionicons color={colors.warning} name="eye-off-outline" size={26} />
+          <Ionicons color={colors.textMuted} name="close" size={26} />
         </Pressable>
-        <AppText color={colors.warning} variant="label">Hide</AppText>
       </View>
 
       <View style={styles.actionItem}>
@@ -294,15 +298,15 @@ function ActionDock({
           <View
             accessibilityLabel={statusLabel}
             accessibilityRole="text"
-            style={[styles.actionButton, styles.statusButton]}>
+            style={[styles.actionButton, styles.primaryAction, styles.statusButton, statusTone]}>
             <Ionicons
               color={statusColor}
               name={status === 'accepted'
-                ? 'checkmark-outline'
+                ? 'people-outline'
                 : status === 'declined'
                   ? 'close-outline'
-                  : 'time-outline'}
-              size={28}
+                  : 'checkmark-outline'}
+              size={30}
             />
           </View>
         ) : (
@@ -313,15 +317,13 @@ function ActionDock({
             onPress={() => onConnect(profile)}
             style={({ pressed }) => [
               styles.actionButton,
+              styles.primaryAction,
               styles.connectButton,
               pressed && styles.actionPressed,
             ]}>
-            <Ionicons color={colors.surfaceRaised} name="person-add-outline" size={26} />
+            <Ionicons color={colors.surfaceRaised} name="person-add-outline" size={29} />
           </Pressable>
         )}
-        <AppText color={status ? statusColor : colors.primary} variant="label">
-          {status ? statusLabel : 'Connect'}
-        </AppText>
       </View>
     </View>
   );
@@ -342,13 +344,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'center',
-    gap: spacing.xxl,
-    paddingTop: spacing.md,
+    gap: spacing.xl,
+    paddingTop: spacing.md + spacing.xxs,
   },
   actionItem: {
-    minWidth: 80,
+    minWidth: 72,
+    height: 64,
     alignItems: 'center',
-    gap: spacing.xxs,
+    justifyContent: 'center',
   },
   actionButton: {
     width: 52,
@@ -360,14 +363,17 @@ const styles = StyleSheet.create({
   },
   hideButton: {
     borderWidth: 1.5,
-    borderColor: colors.warning,
-    backgroundColor: colors.warningSoft,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
   },
+  primaryAction: { width: 64, height: 64 },
   connectButton: { backgroundColor: colors.primary },
   statusButton: {
-    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
   },
+  pendingButton: { backgroundColor: colors.primarySoft },
+  acceptedButton: { backgroundColor: colors.successSoft },
+  declinedButton: { backgroundColor: colors.warningSoft },
   actionPressed: { opacity: 0.72, transform: [{ scale: 0.94 }] },
 });

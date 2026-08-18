@@ -141,8 +141,66 @@ profiles. The deck
 renders the exact shared public-profile card used by **My profile**, with its own vertical
 scroll viewport filling the remaining space above the tab bar. **Hide profile** and
 **Connect** remain deliberate circular actions in a thumb-area dock beneath the card.
-Connect sends a directional request and leaves the card visible with its request status;
-Hide removes it after confirmation.
+Connect sends a directional request; after a successful send, the profile leaves
+Discovery and remains excluded on future loads. Hide removes a profile after confirmation
+without sending a request.
+The explanatory Hide confirmation appears only on the account's first Hide tap. Once the
+user has seen it—even if they cancel—that acknowledgement is stored privately on their
+account and later Hide taps act immediately.
+The controls float without persistent text. A smaller neutral-gray outlined X keeps Hide
+available without making it visually alarming, while the larger filled person-add circle
+establishes Connect as the primary action.
+Accessible labels preserve the full meaning that is intentionally omitted from the visual
+treatment.
+Tapping Connect opens a keyboard-aware bottom drawer rather than sending immediately. The
+user may add a note of up to 180 characters or leave it empty, then explicitly send or
+cancel while the selected profile remains visible behind the drawer. Incoming requests
+surface the note in a distinct conversational panel before the accept and decline actions.
+When no eligible profiles remain, Discovery becomes a full-height caught-up state rather
+than an error card. A lightweight stacked-deck illustration preserves the page metaphor,
+with a sleepy face, small `zzz`s, and gently playful “people pile” copy. **Shuffle again**
+wobbles the illustration while refreshing in place rather than replacing the state with a
+loading card. A secondary action opens existing Connections, and a quiet note clarifies
+that connected and hidden profiles intentionally remain outside the deck.
+
+### Connections
+
+The bottom navigation follows the journey from environment to people to relationships:
+**Calm places**, **Discovery**, **Connections**, then **My profile**.
+
+Connections uses two top-level segmented tabs. **Connected** is a compact conversation inbox:
+each accepted relationship is one fully tappable row with avatar, name, live last-message
+preview, and a contextual time or date. Empty conversations use **Start a conversation**
+instead of a large generic button. **Requests** groups temporary states
+into **Needs your reply** for incoming invitations and **Waiting for them** for sent,
+pending invitations; only incoming items contribute to the tab badge. Each tab owns its
+introductory copy and focused empty state.
+
+Request cards keep the decision itself quick to scan. The complete identity header is a
+single generous tap target, with a chevron and accessible hint opening a near-full-height
+profile modal with a fixed close header and independently scrollable content. Personal notes
+are presented as attributed quotes rather than settings rows. Decision controls stay off the
+compact request card: opening the complete profile reveals a neutral **X** action with
+confirmation alongside a slightly larger teal **check** in the modal's fixed footer. Both
+circular actions have explicit accessibility labels. The modal reuses the same
+public profile presentation as Discovery and My profile, so the decision never depends on a
+reduced or differently formatted version of someone's details.
+
+Hidden profiles are intentionally outside this everyday workflow. A quiet eye-off action
+in the page header opens a dedicated management screen where hidden people can be reviewed
+and unhidden. Chat uses compact sender-aligned bubbles, a fixed composer, and a gentle
+first-message prompt rather than presenting an empty conversation as an error. Every
+persisted bubble includes a quiet, right-aligned local send time, including the opening note
+carried over from the accepted connection request.
+
+The chat header keeps the conversation identity visible with a 44-point circular profile
+photo, prominent name, and quiet city or connection context beneath it. Profiles without a
+published `photoUrl` use the existing sunflower initial fallback. The same reusable avatar
+renders the profile-completion header, public profiles, Discovery, request and connection
+lists, hidden-profile management, and chat, preventing identity from drifting visually.
+Real photos in public profiles and chat headers are tappable. They open a full-screen dark
+lightbox with contain sizing, an explicit close control, backdrop dismissal, and Android
+back-button support. Initial-only fallbacks remain non-interactive.
 
 Pronouns are an essential profile choice with one-tap common presets. **Build my own
 pair** opens a focused bottom sheet with two Unicode-friendly text fields on either side

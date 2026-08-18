@@ -9,15 +9,14 @@ import {
   setDoc,
   updateDoc,
   where,
+  writeBatch,
 } from '@react-native-firebase/firestore';
 
 import type { ConnectionRequestStatus } from '@/features/connections/connectionRequestService';
-import {
-  initialProfile,
-  type EditableProfile,
-} from '@/features/profile/profileEditorModel';
+import { migrateLegacyHiddenProfiles } from '@/features/connections/hiddenProfileMigration';
+import type { EditableProfile } from '@/features/profile/profileEditorModel';
+import { publicProfileFromStoredData } from '@/features/profile/publicProfileMapper';
 import { db } from '@/lib/firebase';
-import type { EnergyLevel } from '@/types/domain';
 
 type QueryDocument = { id: string; data: () => Record<string, unknown> };
 
@@ -28,16 +27,6 @@ export interface DiscoveryProfile {
   sharedInterestCount: number;
 }
 
-function energyLevel(value: unknown): EnergyLevel {
-  if (typeof value === 'number' && value >= 1 && value <= 5) {
-    return Math.round(value) as EnergyLevel;
-  }
-  if (value === 'open') return 5;
-  if (value === 'limited') return 2;
-  if (value === 'quiet') return 1;
-  return 3;
-}
-
 export async function getDiscoveryProfiles(
   userId: string,
   currentInterests: string[],
@@ -46,51 +35,40 @@ export async function getDiscoveryProfiles(
   const outgoingSnapshot = await getDocs(
     query(collection(db, 'connectionRequests'), where('senderId', '==', userId)),
   ).catch(() => null);
-  const accountSnapshot = await getDoc(doc(db, 'users', userId)).catch(() => null);
-  const hiddenProfileIds = new Set(
-    Array.isArray(accountSnapshot?.data()?.hiddenProfileIds)
-      ? accountSnapshot.data()?.hiddenProfileIds as string[]
-      : [],
+  const directlyHiddenIds = new Set(
+    await migrateLegacyHiddenProfiles(userId).catch(() => []),
   );
-  const outgoingRequests = new Map(
+  const hiddenProfilesSnapshot = await getDocs(
+    collection(db, 'hiddenUsers', userId, 'profiles'),
+  );
+  const hiddenProfileIds = new Set(directlyHiddenIds);
+  (hiddenProfilesSnapshot.docs as QueryDocument[]).forEach(hiddenDocument => {
+    hiddenProfileIds.add(hiddenDocument.id);
+  });
+  const outgoingRequests = new Set(
     ((outgoingSnapshot?.docs ?? []) as QueryDocument[]).map(requestDocument => {
       const request = requestDocument.data();
-      return [
-        String(request.recipientId),
-        request.status as ConnectionRequestStatus,
-      ];
+      return String(request.recipientId);
     }),
   );
   const interests = new Set(currentInterests.map(value => value.toLocaleLowerCase()));
 
   return (profilesSnapshot.docs as QueryDocument[]).flatMap(profileDocument => {
-    if (profileDocument.id === userId || hiddenProfileIds.has(profileDocument.id)) return [];
+    if (
+      profileDocument.id === userId
+      || hiddenProfileIds.has(profileDocument.id)
+      || outgoingRequests.has(profileDocument.id)
+    ) return [];
     const profile = profileDocument.data() as unknown as Partial<EditableProfile> & {
       profileSetupComplete?: boolean;
     };
     if (profile.visibility !== 'discoverable' || profile.profileSetupComplete !== true) return [];
-    const profileInterests = profile.interests ?? [];
-    const defaults = initialProfile(profile.displayName ?? '');
+    const normalizedProfile = publicProfileFromStoredData(profile);
+    const profileInterests = normalizedProfile.interests;
 
     return [{
       id: profileDocument.id,
-      requestStatus: outgoingRequests.get(profileDocument.id),
-      profile: {
-        ...defaults,
-        ...profile,
-        dateOfBirth: '',
-        displayName: profile.displayName?.trim() || 'Unnamed profile',
-        energy: energyLevel(profile.energy),
-        interests: profileInterests,
-        connectionGoals: profile.connectionGoals ?? [],
-        connectionStyles: profile.connectionStyles ?? [],
-        sensoryPreferences: profile.sensoryPreferences ?? [],
-        meetupPreferences: profile.meetupPreferences ?? [],
-        communication: {
-          ...defaults.communication,
-          ...profile.communication,
-        },
-      },
+      profile: normalizedProfile,
       sharedInterestCount: profileInterests.filter(value =>
         interests.has(value.toLocaleLowerCase()),
       ).length,
@@ -99,15 +77,20 @@ export async function getDiscoveryProfiles(
 }
 
 export async function hideDiscoveryProfile(userId: string, profileId: string) {
-  await setDoc(
-    doc(db, 'users', userId),
-    {
-      uid: userId,
-      hiddenProfileIds: arrayUnion(profileId),
-      updatedAt: serverTimestamp(),
-    },
-    { merge: true },
-  );
+  const batch = writeBatch(db);
+  batch.set(doc(db, 'users', userId), {
+    uid: userId,
+    hiddenProfileIds: arrayUnion(profileId),
+    updatedAt: serverTimestamp(),
+  }, { merge: true });
+  const hiddenRecord = {
+    hiderId: userId,
+    hiddenId: profileId,
+    updatedAt: serverTimestamp(),
+  };
+  batch.set(doc(db, 'hiddenUsers', userId, 'profiles', profileId), hiddenRecord);
+  batch.set(doc(db, 'hiddenUsers', profileId, 'profiles', userId), hiddenRecord);
+  await batch.commit();
 
   const incomingSnapshot = await getDocs(
     query(collection(db, 'connectionRequests'), where('recipientId', '==', userId)),
@@ -125,4 +108,21 @@ export async function hideDiscoveryProfile(userId: string, profileId: string) {
       updatedAt: serverTimestamp(),
     }),
   ));
+}
+
+export async function hasSeenHideExplanation(userId: string) {
+  const snapshot = await getDoc(doc(db, 'users', userId));
+  return snapshot.data()?.hasSeenHideExplanation === true;
+}
+
+export function markHideExplanationSeen(userId: string) {
+  return setDoc(
+    doc(db, 'users', userId),
+    {
+      uid: userId,
+      hasSeenHideExplanation: true,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true },
+  );
 }

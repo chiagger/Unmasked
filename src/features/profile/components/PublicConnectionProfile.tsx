@@ -4,6 +4,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { AppText, Card, Pill, colors, radii, spacing } from '@/design-system';
 import { profileOptions, type EditableProfile } from '@/features/profile/profileEditorModel';
 import { SocialBatteryIndicator } from '@/features/profile/components/SocialBatteryIndicator';
+import { ProfileAvatar } from '@/features/profile/components/ProfileAvatar';
 
 const responseLabels = {
   'same-day': 'Usually replies the same day',
@@ -60,30 +61,39 @@ export function PublicConnectionProfile({
   const content = (
     <>
       <View style={stylesSheet.hero}>
-        <View style={stylesSheet.avatar}>
-          <AppText color={colors.secondary} variant="title">
-            {(profile.displayName || '?')[0].toUpperCase()}
-          </AppText>
-        </View>
+        <ProfileAvatar
+          expandable
+          name={profile.displayName}
+          photoUrl={profile.photoUrl}
+          size={64}
+        />
         <View style={stylesSheet.identity}>
-          <AppText variant="title">{profile.displayName || 'Unnamed profile'}</AppText>
-          <AppText color={colors.textMuted}>
-            {[profile.pronouns, profile.age || null].filter(Boolean).join(' · ')}
+          <AppText ellipsizeMode="tail" numberOfLines={1} variant="title">
+            {profile.displayName || 'Unnamed profile'}
           </AppText>
-          {profile.city ? (
-            <View style={stylesSheet.location}>
-              <Ionicons color={colors.textMuted} name="location-outline" size={17} />
-              <AppText color={colors.textMuted} variant="caption">{profile.city}</AppText>
+          <View style={stylesSheet.identityDetails}>
+            <View style={stylesSheet.metadata}>
+              <AppText color={colors.textMuted}>
+                {[profile.pronouns, profile.age || null].filter(Boolean).join(' · ')}
+              </AppText>
+              {profile.city ? (
+                <View style={stylesSheet.location}>
+                  <Ionicons color={colors.textMuted} name="location-outline" size={17} />
+                  <AppText color={colors.textMuted} variant="caption">{profile.city}</AppText>
+                </View>
+              ) : null}
+              {profile.languages ? (
+                <View style={stylesSheet.location}>
+                  <Ionicons color={colors.textMuted} name="language-outline" size={17} />
+                  <AppText color={colors.textMuted} variant="caption">{profile.languages}</AppText>
+                </View>
+              ) : null}
             </View>
-          ) : null}
-          {profile.languages ? (
-            <View style={stylesSheet.location}>
-              <Ionicons color={colors.textMuted} name="language-outline" size={17} />
-              <AppText color={colors.textMuted} variant="caption">{profile.languages}</AppText>
-            </View>
-          ) : null}
+            {profile.showEnergy ? (
+              <SocialBatteryIndicator level={profile.energy} onPress={onEnergyPress} />
+            ) : null}
+          </View>
         </View>
-        {profile.showEnergy ? <SocialBatteryIndicator level={profile.energy} onPress={onEnergyPress} /> : null}
       </View>
 
       {profile.bio ? (
@@ -180,8 +190,13 @@ const stylesSheet = StyleSheet.create({
     alignItems: 'flex-start',
     gap: spacing.md,
   },
-  avatar: { width: 64, height: 64, alignItems: 'center', justifyContent: 'center', borderRadius: radii.pill, backgroundColor: colors.secondarySoft },
   identity: { flex: 1, gap: spacing.xxs },
+  identityDetails: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.xs,
+  },
+  metadata: { flex: 1, gap: spacing.xxs },
   location: { flexDirection: 'row', alignItems: 'center', gap: spacing.xxs },
   bio: { fontSize: 17 },
   prompt: {

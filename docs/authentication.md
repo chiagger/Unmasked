@@ -121,10 +121,35 @@ Directional invitations live at `connectionRequests/{senderUid}_{recipientUid}`.
 sender may create one pending request, both participants may read it, and only the
 recipient may transition it from pending to accepted or declined. Cycling through the
 Discovery deck writes nothing; only the explicit Connect action creates a request.
+Requests may include an optional sender-authored message of at most 180 characters. The
+message is stored on the request document, validated on creation by Firestore rules, and
+is readable only by the sender and recipient under the request's existing access policy.
+After acceptance, the chat presents that immutable request note as its opening message and
+uses it as the conversation-list preview until a newer chat message exists. It is read from
+the request rather than copied into the messages collection, preventing duplicate opening
+messages and preserving the behavior for connections accepted before this feature existed.
+Discovery excludes every recipient for whom the current user already has an outgoing
+request, regardless of whether that request is pending, accepted, or declined.
 
-Hidden profile IDs are owner-only account data on `users/{uid}`. Discovery excludes them,
-existing pending requests from a newly hidden profile are declined, and Firestore rules
-reject future request creation when the recipient has hidden the sender.
+Accepted request documents also authorize their participants' chat at
+`connectionChats/{requestId}/messages/{messageId}`. Only either participant may read or
+create messages, each new message must identify the signed-in sender, and message text is
+limited to 1,000 characters. Messages cannot be edited or deleted through the client.
+
+Presence is stored separately at `presence/{uid}` with only `online` and `lastSeen` fields.
+Users may write only their own presence, while reads are limited to themselves and accepted
+connections. The app publishes foreground/background transitions and a one-minute foreground
+heartbeat. Chat treats an `online` record older than two minutes as stale, so an interrupted
+client falls back to **Last seen** instead of appearing online indefinitely.
+
+Hidden profile IDs remain owner-only account data on `users/{uid}` for management UI. Each
+hide also creates mirrored minimal records under both users' private
+`hiddenUsers/{uid}/profiles/{otherUid}` paths. Each user may read only their own subtree,
+while only the hider may create or remove both mirrors; neither user sees the other in
+Discovery. Existing pending requests from a newly hidden
+profile are declined, and Firestore rules reject future requests in either direction. Older
+owner-only hide lists are migrated whenever the hider next authenticates or opens the app,
+without requiring them to visit Discovery first.
 
 Authenticated accounts are gated on profile setup before any application tab is rendered.
 Registration routes directly to the profile-completeness index. Display name, pronouns,
@@ -137,6 +162,12 @@ a profile calculates a numeric age for `profiles/{uid}`, removes legacy age-rang
 date-of-birth fields from that public document, and publishes only the numeric age.
 The private `users/{uid}` document remains owner-readable and contains authentication
 identity only.
+
+Profile photos are stored at `profilePhotos/{uid}/avatar` in Firebase Storage. Any signed-in
+member may read them because they are public-profile media; only the owner may create,
+replace, or delete their image. Storage rules accept image MIME types under 5 MB. The public
+profile document stores only the resulting `photoUrl`, and the UI falls back to the member's
+initial when no image is present.
 
 The project uses the named Enterprise database `default` in `europe-west8`.
 React Native Firebase must receive that database ID explicitly because an

@@ -8,6 +8,7 @@ import {
   requiredProfileFieldsComplete,
   type EditableProfile,
 } from '@/features/profile/profileEditorModel';
+import { ProfileAvatar } from '@/features/profile/components/ProfileAvatar';
 import {
   getOpenedProfileChapters,
   markProfileChapterOpened,
@@ -40,6 +41,7 @@ const chapters: Chapter[] = [
     id: 'personal', number: '01', title: 'My profile',
     description: 'How people get to know you',
     completion: profile => completion([
+      profile.photoUrl,
       profile.displayName.trim(),
       profile.pronouns,
       profile.dateOfBirth,
@@ -127,9 +129,11 @@ export default function EditProfileScreen() {
         />
       }>
       <View style={styles.identity}>
-        <View style={styles.avatar}>
-          <AppText color={colors.secondary} variant="title">{(profile.displayName || '?')[0].toUpperCase()}</AppText>
-        </View>
+        <ProfileAvatar
+          name={profile.displayName || 'Your profile'}
+          photoUrl={profile.photoUrl}
+          size={72}
+        />
         <View style={styles.identityCopy}>
           <AppText variant="title">{profile.displayName || 'Your profile'}</AppText>
           <AppText color={colors.textMuted}>{loading ? 'Loading your profile…' : completed ? `${completed} of 4 areas complete` : 'Ready to shape in your own time'}</AppText>
@@ -183,7 +187,6 @@ export default function EditProfileScreen() {
 const styles = StyleSheet.create({
   screen: { gap: spacing.xl },
   identity: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  avatar: { width: 72, height: 72, alignItems: 'center', justifyContent: 'center', borderRadius: radii.lg, backgroundColor: colors.secondarySoft },
   identityCopy: { flex: 1, gap: spacing.xxs },
   reassurance: { flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start', paddingVertical: spacing.sm },
   reassuranceCopy: { flex: 1 },

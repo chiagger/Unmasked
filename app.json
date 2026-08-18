@@ -16,6 +16,7 @@
       "supportsTablet": true
     },
     "android": {
+      "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "backgroundColor": "#F4F7F7",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -36,6 +37,14 @@
       "@react-native-firebase/auth",
       "expo-apple-authentication",
       "@react-native-google-signin/google-signin",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Unmasked to choose your profile photo.",
+          "cameraPermission": "Allow Unmasked to take your profile photo.",
+          "microphonePermission": false
+        }
+      ],
       [
         "expo-splash-screen",
         {
