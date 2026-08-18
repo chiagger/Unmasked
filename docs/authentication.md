@@ -114,6 +114,11 @@ must only allow a signed-in user to read and update their own document. Public
 profile data intended for discovery should live in a separately reviewed data
 model rather than exposing private auth identity fields.
 
+Editable connection profiles live at `profiles/{uid}`. Authenticated users may read
+profiles for discovery, while only the owner may create, update, or delete their profile.
+The private `users/{uid}` document remains owner-readable and contains authentication
+identity only.
+
 The project uses the named Enterprise database `default` in `europe-west8`.
 React Native Firebase must receive that database ID explicitly because an
 unspecified client connects to the distinct special database `(default)`.

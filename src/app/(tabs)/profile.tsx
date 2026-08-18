@@ -1,8 +1,10 @@
+import { router } from 'expo-router';
 import { StyleSheet, Switch, View } from 'react-native';
 
 import { AppButton, AppText, Card, Pill, Screen, colors, spacing } from '@/design-system';
 import { useAccessibilityPreferences } from '@/providers/AccessibilityProvider';
 import { useAuth } from '@/providers/AuthProvider';
+import { EnergyQuickStatus } from '@/features/profile/components/EnergyQuickStatus';
 
 export default function ProfileScreen() {
   const { reduceMotion, setReduceMotion } = useAccessibilityPreferences();
@@ -25,7 +27,10 @@ export default function ProfileScreen() {
         <AppText color={colors.textMuted}>
           {user?.email ?? 'Add interests, communication preferences, and boundaries.'}
         </AppText>
+        <AppButton fullWidth label="Edit my profile" onPress={() => router.push('/profile/edit')} />
       </Card>
+
+      <EnergyQuickStatus />
 
       <View style={styles.section}>
         <AppText variant="heading">Comfort settings</AppText>

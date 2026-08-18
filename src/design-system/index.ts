@@ -4,3 +4,4 @@ export * from './components/AppText';
 export * from './components/Card';
 export * from './components/Pill';
 export * from './components/Screen';
+export * from './components/ScreenHeader';

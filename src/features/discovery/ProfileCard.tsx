@@ -16,6 +16,9 @@ const connectionLabels: Record<ConnectionStyle, string> = {
   'parallel-play': 'Parallel play',
   'infodump-exchange': 'Infodump exchange',
   'activity-first': 'Activity first',
+  'comfortable-silence': 'Comfortable silence',
+  'text-first': 'Text first',
+  'body-doubling': 'Body doubling',
 };
 
 const energyLabels: Record<EnergyLevel, string> = {

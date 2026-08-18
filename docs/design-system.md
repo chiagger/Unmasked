@@ -54,3 +54,27 @@ above gesture handles and system navigation buttons. A soft Ocean capsule and fi
 identify the active destination without relying on color alone. Labels remain visible for
 every destination, each item preserves at least a 48-point touch target, and the bar hides
 while the keyboard is open to protect form space.
+
+### Profile editing
+
+The profile editor is organized as four focused chapters: **My profile**, **How I
+connect**, **What feels comfortable**, and **Privacy and discovery**. Its index presents
+these as a quiet vertical journey rather than accordions or repeated cards. Each chapter
+opens a dedicated screen, keeps its essential choices visible, and places less common
+fields behind **More ways to personalize**. Completion language reports areas started
+without implying that optional disclosure is required. Energy is a temporary status and
+therefore lives as a quick control in **Your space**, outside the permanent-profile editor.
+Choice chips pair color with a checkmark and accessibility state, and the single filled
+**Done** action saves the current chapter.
+
+Profile editor index and chapter screens use the shared fixed screen header. The safe-area
+header remains above the scroll container while only page content moves, keeping back
+navigation and page context available throughout long forms.
+
+Pronouns are an essential profile choice with one-tap common presets. **Build my own
+pair** opens a focused bottom sheet with two Unicode-friendly text fields on either side
+of a slash, supporting neopronouns and uncommon combinations without imposing a fixed vocabulary.
+Slash characters, line breaks, and control characters are removed from each side, and
+custom input is normalized to lowercase. Cancelling or dismissing the sheet keeps the previous
+selection, while saving requires both sides. **Any pronouns** and **Use my name** remain
+inclusive alternatives alongside the common presets.

@@ -18,6 +18,7 @@ export const colors = {
   successSoft: '#DCEBE3',
   border: '#D3DEDD',
   focus: '#255E78',
+  overlay: 'rgba(38, 51, 53, 0.38)',
 } as const;
 
 export const spacing = {
